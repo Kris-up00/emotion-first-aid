@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>情绪急救站 🩹</title>
+<!-- v2.2 - Audio autoplay fix - CDN refresh -->
+<style>
+  :root {
+    --bg-deep: #141420;
+    --bg-card: rgba(255,255,255,0.06);
+    --bg-card-hover: rgba(255,255,255,0.1);
+    --warm-1: #f8b4b4;
+    --warm-2: #f7c9a8;
+    --warm-3: #f9e4b7;
+    --warm-4: #b8d8ba;
+    --warm-5: #a8c8e8;
+    --warm-6: #c4b8e8;
+    --text-primary: #f0ece6;
+    --text-secondary: rgba(240,236,230,0.55);
+    --text-dim: rgba(240,236,230,0.3);
+    --accent: #f8b4b4;
+    --radius: 20px;
+    --radius-sm: 14px;
+    --radius-full: 50px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 背景氛围 ===== */
+  .atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .atmosphere .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    animation: blobFloat 10s ease-in-out infinite;
+  }
+  .blob-1 { width:280px; height:280px; background:var(--warm-1); top:-100px; right:-80px; }
+  .blob-2 { width:220px; height:220px; background:var(--warm-6); bottom:15%; left:-60px; animation-delay:4s; }
+  .blob-3 { width:180px; height:180px; background:var(--warm-5); bottom:-40px; right:10%; animation-delay:7s; }
+  @keyframes blobFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(10px,-20px) scale(1.05); }
+    66% { transform: translate(-10px,10px) scale(0.97); }
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    animation: twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.15; }
+    50% { opacity: 0.6; }
+  }
+
+  /* ===== 页面系统 ===== */
+  .page {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    will-change: opacity, transform;
+    overflow: hidden;
+  }
+  .page.hidden {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    pointer-events: none !important;
+  }
+  .page.hidden * {
+    pointer-events: none !important;
+  }
+  .page.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* ===== 首屏 ===== */
+  .home-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    background: rgba(248,180,180,0.1);
+    border: 1px solid rgba(248,180,180,0.15);
+    font-size: 0.75rem;
+    color: var(--warm-1);
+    margin-bottom: 1.8rem;
+  }
+  .hero-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.2rem;
+    animation: breathe 4s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .hero-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+  }
+  .hero-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    max-width: 280px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat .num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--warm-1);
+  }
+  .hero-stat .label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+  }
+
+  /* ===== 按钮 ===== */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.95rem 2.2rem;
+    border: none;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    color: var(--bg-deep);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 4px 25px rgba(248,180,180,0.25);
+    letter-spacing: 0.02em;
+    font-family: inherit;
+  }
+  .btn-primary:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 8px 35px rgba(248,180,180,0.35); }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.5rem;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;}
+  .btn-ghost:hover { background: rgba(255,255,255,0.05); }
+
+  /* 急救页面按钮区域 - 自然跟随文案 */
+  .aid-actions {
+    padding: 1.5rem 1rem 2rem;
+    margin-top: auto;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.25); color: var(--text-primary); }
+
+  /* ===== 情绪选择页 ===== */
+  .emotion-page-inner {
+    width: 100%;
+    max-width: 380px;
+  }
+  .emotion-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .emotion-header .hint {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+  }
+
+  .emotion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .emotion-item {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .emotion-item:hover {
+    border-color: rgba(255,255,255,0.12);
+    background: var(--bg-card-hover);
+    transform: translateX(4px);
+  }
+  .emotion-item:active { transform: scale(0.98); }
+  .emotion-item .emoji {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+  }
+  .emotion-item .info { flex: 1; }
+  .emotion-item .info .name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+  .emotion-item .info .desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .emotion-item .tag {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    background: rgba(248,180,180,0.1);
+    color: var(--warm-1);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .emotion-item .tag.cool { background: rgba(168,200,232,0.1); color: var(--warm-5); }
+  .emotion-item .tag.warm { background: rgba(184,216,186,0.1); color: var(--warm-4); }
+
+  /* 紧急按钮 */
+  .emotion-item.emergency {
+    border-color: rgba(248,180,180,0.2);
+    background: rgba(248,180,180,0.05);
+    margin-top: 0.5rem;
+  }
+
+  .emotion-back {
+    text-align: center;
+    margin-top: 1.2rem;
+  }
+
+  /* ===== 急救页面 ===== */
+  .aid-scroll {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    padding: 2rem 1.5rem;
+    pointer-events: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .aid-content {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .aid-scene-tag {
+    display: inline-flex;
+    padding: 0.25rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 1rem;
+  }
+  .aid-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
+    animation: gentle-bounce 2.5s ease-in-out infinite;
+  }
+  @keyframes gentle-bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .aid-message {
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
+  }
+  .aid-science {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 1.8rem;
+  }
+  .aid-science span {
+    color: var(--warm-4);
+  }
+
+  /* ===== 互动组件 ===== */
+
+  /* 呼吸引导 */
+  .breath-guide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .breath-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    position: relative;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .breath-circle .ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(248,180,180,0.2);
+    transition: all 1s ease;
+  }
+  .breath-circle .ring.inhale {
+    transform: scale(1.25);
+    border-color: rgba(248,180,180,0.5);
+    box-shadow: 0 0 40px rgba(248,180,180,0.15);
+  }
+  .breath-circle .ring.hold {
+    transform: scale(1.25);
+    border-color: rgba(249,228,183,0.5);
+    box-shadow: 0 0 40px rgba(249,228,183,0.15);
+  }
+  .breath-circle .ring.exhale {
+    transform: scale(0.85);
+    border-color: rgba(168,200,232,0.4);
+  }
+  .breath-circle .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(248,180,180,0.6);
+    transition: all 1s ease;
+    z-index: 1;
+  }
+  .breath-circle .ring.inhale .dot,
+  .breath-circle .dot.inhale-dot { transform: scale(1.5); background: rgba(248,180,180,0.9); }
+  .breath-circle .dot.exhale-dot { transform: scale(0.7); background: rgba(168,200,232,0.7); }
+
+  /* 吸/呼文字标签 - 圆圈中央 */
+  .breath-label {
+    position: relative;
+    z-index: 2;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    transition: opacity 0.8s ease, color 0.8s ease;
+    pointer-events: none;
+    user-select: none;
+  }
+  .breath-label.inhale-label { color: rgba(248,180,180,0.9); }
+  .breath-label.exhale-label { color: rgba(168,200,232,0.8); }
+
+  /* 暖光光晕 - 睡眠场景，像被毯子包裹的温暖感 */
+  .moon-glow {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin: 2rem auto;
+    background: radial-gradient(circle, rgba(240,200,160,0.3) 0%, rgba(220,180,140,0.15) 40%, transparent 70%);
+    box-shadow: 0 0 60px rgba(220,180,140,0.2), 0 0 120px rgba(200,160,120,0.1);
+    animation: moonBreath 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes moonBreath {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 0.9; }
+  }
+
+  .breath-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    min-height: 1.5em;
+    transition: all 0.3s;
+  }
+  .breath-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--warm-1);
+    margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .breath-rounds {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+  }
+
+  /* 5-4-3-2-1 着陆法 */
+  .grounding-steps {
+    text-align: left;
+    margin: 1rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .grounding-step {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.4s ease;
+  }
+  .grounding-step.active {
+    border-color: rgba(248,180,180,0.3);
+    background: rgba(248,180,180,0.06);
+  }
+  .grounding-step.done {
+    border-color: rgba(184,216,186,0.3);
+    background: rgba(184,216,186,0.06);
+  }
+  .grounding-step .g-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .grounding-step.active .g-icon { background: rgba(248,180,180,0.15); }
+  .grounding-step.done .g-icon { background: rgba(184,216,186,0.15); }
+  .grounding-step .g-text {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+  .grounding-step.active .g-text { color: var(--text-primary); }
+  .grounding-step.done .g-text { color: var(--warm-4); }
+
+  .grounding-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    margin: 0.5rem auto 1.5rem;
+  }
+  .grounding-action-btn:hover { background: var(--bg-card-hover); }
+
+  /* 拥抱自己 */
+  .hug-visual {
+    font-size: 3.5rem;
+    margin: 1rem auto;
+    animation: hug 3.5s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @keyframes hug {
+    0%,100% { transform: scale(1); letter-spacing: 0; }
+    20% { transform: scale(1.04) rotate(-2deg); }
+    40% { transform: scale(0.93) rotate(0deg); letter-spacing: -6px; }
+    60% { transform: scale(0.93); letter-spacing: -6px; }
+    80% { transform: scale(1.04) rotate(2deg); }
+  }
+
+  /* 用户反馈组件 */
+  .feedback-section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+  .feedback-title {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+  }
+  .feedback-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+  }
+  .feedback-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+  }
+  .feedback-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+  .feedback-btn.active {
+    background: rgba(248,180,180,0.15);
+    border-color: rgba(248,180,180,0.3);
+    color: var(--warm-1);
+  }
+  .feedback-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: none;
+    margin-bottom: 0.6rem;
+  }
+  .feedback-textarea::placeholder { color: var(--text-dim); }
+  .feedback-submit {
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius-full);
+    border: none;
+    background: linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    color: var(--bg-deep);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+  .feedback-submit:hover { transform: scale(1.03); }
+  .feedback-thanks {
+    font-size: 0.9rem;
+    color: var(--warm-4);
+    padding: 1rem;
+  }
+
+  /* 肌肉放松 */
+  .muscle-guide {
+    text-align: left;
+    margin: 1rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .muscle-step {
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    transition: all 0.4s ease;
+  }
+  .muscle-step .m-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    font-weight: 600;
+  }
+  .muscle-step.active {
+    border-color: rgba(249,228,183,0.3);
+    background: rgba(249,228,183,0.06);
+    color: var(--text-primary);
+  }
+  .muscle-step.active .m-num { background: rgba(249,228,183,0.2); }
+
+  .muscle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2.2rem;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    margin: 0.5rem auto 1.5rem;
+    border: none;
+  }
+  .muscle-btn.tense {
+    background: linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    color: var(--bg-deep);
+    box-shadow: 0 4px 20px rgba(248,180,180,0.2);
+  }
+  .muscle-btn.release {
+    background: linear-gradient(135deg, var(--warm-4), var(--warm-5));
+    color: var(--bg-deep);
+    box-shadow: 0 4px 20px rgba(184,216,186,0.2);
+  }
+
+  /* 认知重建卡片 */
+  .rethink-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 1.3rem;
+    margin: 1rem 0 1.5rem;
+    text-align: left;
+  }
+  .rethink-card .label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+  }
+  .rethink-card .negative {
+    font-size: 0.88rem;
+    color: rgba(248,180,180,0.6);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(248,180,180,0.05);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid rgba(248,180,180,0.2);
+  }
+  .rethink-card .arrow {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin: 0.5rem 0;
+  }
+  .rethink-card .positive {
+    font-size: 0.92rem;
+    color: var(--warm-4);
+    line-height: 1.6;
+    padding: 0.6rem 0.8rem;
+    background: rgba(184,216,186,0.05);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid rgba(184,216,186,0.3);
+    font-weight: 500;
+  }
+
+  .rethink-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .rethink-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+  .rethink-dot.active {
+    background: var(--warm-1);
+    width: 20px;
+    border-radius: 4px;
+  }
+
+  /* 写下来释放 */
+  .release-textarea {
+    width: 100%;
+    min-height: 100px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 1rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  .release-textarea:focus { border-color: rgba(248,180,180,0.3); }
+  .release-textarea::placeholder { color: var(--text-dim); }
+
+  .release-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1.8rem;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--warm-6), var(--warm-5));
+    color: var(--bg-deep);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    margin: 0 auto;
+  }
+  .release-btn:hover { transform: scale(1.03); }
+
+  /* 温度刺激 */
+  .temp-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin: 1rem 0 2rem;
+    text-align: left;
+  }
+  .temp-step {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .temp-step .t-emoji { font-size: 1.5rem; flex-shrink: 0; }
+  .temp-step .t-text { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; }
+
+  /* 倒数中断 */
+  .countdown-visual {
+    margin: 1.5rem auto;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .countdown-num {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .countdown-num.show { opacity: 1; transform: scale(1); }
+  .countdown-num.done { background: rgba(184,216,186,0.1); border-color: rgba(184,216,186,0.2); color: var(--warm-4); }
+
+  /* ===== 收尾页面 ===== */
+  .ending-content {
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+  }
+  .ending-emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .ending-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    line-height: 1.6;
+  }
+  .ending-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+  .ending-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .ending-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.9rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    border: none;
+  }
+  .ending-btn:hover { transform: translateY(-2px); }
+  .ending-btn.primary {
+    background: linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    color: var(--bg-deep);
+    font-weight: 600;
+  }
+  .ending-btn.secondary {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-primary);
+  }
+  .ending-btn.secondary:hover { background: var(--bg-card-hover); }
+
+  /* ===== 结束页反馈 ===== */
+  .ending-feedback {
+    margin: 1.5rem 0;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+  .ending-feedback-title {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+  }
+  .ending-feedback-buttons {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .ending-feedback-btn {
+    flex: 1;
+    padding: 0.7rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+  .ending-feedback-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.15);
+  }
+  .ending-feedback-btn.active {
+    background: rgba(248,180,180,0.15);
+    border-color: rgba(248,180,180,0.3);
+    color: var(--warm-1);
+  }
+  .ending-feedback-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: none;
+    margin-bottom: 0.8rem;
+  }
+  .ending-feedback-textarea::placeholder {
+    color: var(--text-dim);
+  }
+  .ending-feedback-textarea:focus {
+    outline: none;
+    border-color: rgba(248,180,180,0.3);
+  }
+  .ending-feedback-submit {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    border: none;
+    color: var(--bg-deep);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+  .ending-feedback-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(248,180,180,0.3);
+  }
+
+  /* ===== 安全底线 ===== */
+  .safety-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 20;
+    padding: 0.6rem 1rem;
+    text-align: center;
+    background: rgba(20,20,32,0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .safety-banner a {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .safety-banner a:hover { color: var(--text-secondary); }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-full);
+    padding: 0.7rem 1.3rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.4s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 释放动画 ===== */
+  .fly-away {
+    position: fixed;
+    font-size: 1.2rem;
+    z-index: 50;
+    pointer-events: none;
+    animation: flyAway 1.5s ease-out forwards;
+  }
+  @keyframes flyAway {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-200px) scale(0.3) rotate(20deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="atmosphere">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div class="stars" id="stars"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ========== 首屏 ========== -->
+<div class="page active" id="page-home">
+  <div class="home-badge">🩹 情绪急救站</div>
+  <div class="hero-icon">🌙</div>
+  <h1 class="hero-title">你现在还好吗？</h1>
+  <p class="hero-sub">不用思考，不用解决<br>就在这里待30秒</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">30秒</div>
+      <div class="label">重新连接自己</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">0</div>
+      <div class="label">需要做的事</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="goToPage('page-emotion')" style="position:relative;z-index:10;">
+    我需要被接住 ✨
+  </button>
+</div>
+
+<!-- ========== 情绪选择 ========== -->
+<div class="page hidden" id="page-emotion">
+  <div class="emotion-page-inner">
+    <div class="emotion-header">
+      <p style="font-size:1.1rem;font-weight:500;">此刻，你的身体在说什么？</p>
+      <p class="hint">选一个最贴近的，不用想太多</p>
+    </div>
+    <div class="emotion-list">
+      <div class="emotion-item" onclick="selectEmotion('insomnia')">
+        <span class="emoji">🌙</span>
+        <div class="info">
+          <div class="name">睡不着</div>
+          <div class="desc">脑子转个不停，身体却很累</div>
+        </div>
+        <span class="tag">常见</span>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('anxious')">
+        <span class="emoji">😰</span>
+        <div class="info">
+          <div class="name">焦虑心慌</div>
+          <div class="desc">心跳很快，停不下来地担心</div>
+        </div>
+        <span class="tag">常见</span>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('down')">
+        <span class="emoji">😔</span>
+        <div class="info">
+          <div class="name">心里堵</div>
+          <div class="desc">闷闷的，像有什么压着</div>
+        </div>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('lonely')">
+        <span class="emoji">💔</span>
+        <div class="info">
+          <div class="name">孤独</div>
+          <div class="desc">想被看见，却说不出口</div>
+        </div>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('peoplepleaser')">
+        <span class="emoji">🎭</span>
+        <div class="info">
+          <div class="name">总是为别人着想</div>
+          <div class="desc">优先考虑别人，却忽略了自己</div>
+        </div>
+        <span class="tag warm">新增</span>
+      </div>
+      <div class="emotion-item emergency" onclick="selectEmotion('overwhelmed')">
+        <span class="emoji">🆘</span>
+        <div class="info">
+          <div class="name">撑不住了</div>
+          <div class="desc">太多情绪涌过来，快被淹没</div>
+        </div>
+        <span class="tag warm">24h热线</span>
+      </div>
+    </div>
+    <div class="emotion-back">
+      <button class="btn-ghost" onclick="goToPage('page-home')">← 先不了，谢谢</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 急救回应 ========== -->
+<div class="page hidden" id="page-aid">
+  <div class="aid-scroll">
+    <div class="aid-content" id="aidContent"></div>
+  </div>
+</div>
+
+<!-- ========== 收尾 ========== -->
+<div class="page hidden" id="page-ending">
+  <div class="ending-content">
+    <div class="ending-emoji">🌱</div>
+    <p class="ending-title">这30秒<br>你重新连接了自己</p>
+    <p class="ending-sub">
+      你愿意停下来<br>
+      这本身就是一种勇气<br><br>
+      需要时，随时回来
+    </p>
+    <div class="ending-actions">
+      <button class="ending-btn primary" onclick="showToast('已收藏 💛 需要时随时回来')">
+        📌 收藏这个页面
+      </button>
+      <button class="ending-btn secondary" onclick="goToPage('page-emotion')">
+        🔄 再待一会儿
+      </button>
+    </div>
+    <!-- 反馈区域 -->
+    <div class="ending-feedback" id="endingFeedback">
+      <p class="ending-feedback-title">现在感觉怎么样？</p>
+      <div class="ending-feedback-buttons">
+        <button class="ending-feedback-btn" onclick="submitEndingFeedback('better')">🌙 平静一些了</button>
+        <button class="ending-feedback-btn" onclick="submitEndingFeedback('same')">😔 还是一样</button>
+      </div>
+      <textarea class="ending-feedback-textarea" id="endingFeedbackText" rows="2" placeholder="想说什么都可以（可选）"></textarea>
+      <button class="ending-feedback-submit" onclick="submitEndingFeedbackWithText()">就这样吧</button>
+    </div>
+    <p id="endingHint" style="font-size:0.72rem;color:var(--text-dim);margin-top:0.5rem;">
+      如果这种感觉经常来，找专业的人聊聊会更有帮助<br>
+      <a href="tel:4001619995" style="color:var(--warm-5);text-decoration:none;">400-161-9995（24h免费热线）</a>
+    </p>
+  </div>
+</div>
+
+<!-- 安全底线 -->
+<div class="safety-banner">
+  <a href="tel:4001619995">📱 24小时心理援助热线 400-161-9995 ｜ 危机干预热线 400-161-9995</a>
+</div>
+
+<script>
+// ===== 星星 =====
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*2+1}px;height:${s.style.width};animation-delay:${Math.random()*4}s;animation-duration:${3+Math.random()*3}s`;
+    s.style.height=s.style.width;
+    c.appendChild(s);
+  }
+})();
+
+// ===== 页面切换 =====
+function goToPage(id){
+  // 离开急救场景时停止所有声音和定时器
+  cleanup();
+  SoundEngine.stop();
+  
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.classList.add('hidden');});
+  setTimeout(()=>{
+    document.getElementById(id).classList.remove('hidden');
+    document.getElementById(id).classList.add('active');
+    // 收尾页根据焦虑频率更新提示
+    if(id==='page-ending'){
+      updateEndingHint();
+    }
+  },250);
+}
+
+// 根据焦虑频率更新收尾页提示
+function updateEndingHint(){
+  const hintEl = document.getElementById('endingHint');
+  if(!hintEl) return;
+  const today = new Date().toDateString();
+  const anxietyCount = parseInt(localStorage.getItem('anxiety_count_' + today) || '0');
+  if(anxietyCount >= 4){
+    hintEl.innerHTML = '这种模式持续一段时间了，专业支持可能会有帮助<br><a href="tel:4001619995" style="color:var(--warm-5);text-decoration:none;">400-161-9995（24h免费热线）</a>';
+  } else if(anxietyCount >= 2){
+    hintEl.innerHTML = '今天有点辛苦，如果需要，找信任的人聊聊<br><a href="tel:4001619995" style="color:var(--warm-5);text-decoration:none;">400-161-9995（24h免费热线）</a>';
+  } else {
+    hintEl.innerHTML = '如果这种感觉经常来，找专业的人聊聊会更有帮助<br><a href="tel:4001619995" style="color:var(--warm-5);text-decoration:none;">400-161-9995（24h免费热线）</a>';
+  }
+}
+
+// ===== 清理 =====
+let cleanupFn = null;
+let activeTimers = [];
+function cleanup(){
+  if(cleanupFn){cleanupFn();cleanupFn=null;}
+  activeTimers.forEach(t=>{clearTimeout(t);clearInterval(t);});
+  activeTimers=[];
+}
+function addTimer(id){activeTimers.push(id);return id;}
+
+// ===== Toast =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== 急救数据 =====
+const scenarios = {
+  insomnia: {
+    emoji: '🌙',
+    message: '',
+    type: 'gentle-sleep'
+  },
+  anxious: {
+    emoji: '😰',
+    message: '什么都不用做<br>就这样待一会儿',
+    type: 'gentle-anxious'
+  },
+  down: {
+    emoji: '😔',
+    message: '我看见你了<br>不用解释为什么',
+    type: 'gentle-down'
+  },
+  lonely: {
+    emoji: '🌙',
+    message: '远处有一盏灯<br>有人在',
+    type: 'gentle-lonely'
+  },
+  peoplepleaser: {
+    emoji: '🎭',
+    message: '你总是最后一个考虑自己<br>这让你很累吧',
+    type: 'gentle-peoplepleaser'
+  },
+  overwhelmed: {
+    emoji: '🆘',
+    message: '现在什么都不用做<br>你只需要呼吸',
+    type: 'gentle-overwhelm'
+  }
+};
+
+// ===== 主入口 =====
+function selectEmotion(key){
+  cleanup();
+  // 重置 aid-scroll 样式
+  const scroll = document.querySelector('.aid-scroll');
+  if (scroll) {
+    scroll.classList.remove('fullscreen');
+  }
+  const s = scenarios[key];
+  currentScene = key; // 记录当前场景用于反馈
+  const container = document.getElementById('aidContent');
+  let html = '';
+
+  // 纯沉浸场景自带完整布局，不需要外层emoji和message
+  const immersiveScenes = ['gentle-down', 'gentle-lonely', 'gentle-peoplepleaser', 'gentle-anxious'];
+  if (!immersiveScenes.includes(s.type)) {
+    html += `<div class="aid-emoji">${s.emoji}</div>`;
+    html += `<p class="aid-message">${s.message}</p>`;
+  }
+
+  // 场景声音推荐（全屏场景自己处理声音，不需要提示）
+  const suggestSound = soundSuggestions[key];
+  const isFullScreenScene = ['gentle-down', 'gentle-lonely', 'gentle-peoplepleaser', 'gentle-sleep', 'gentle-anxious'].includes(s.type);
+  if (suggestSound && !isFullScreenScene) {
+    // 用户已点击按钮进入场景，此时可以自动播放音频（浏览器允许用户交互后的自动播放）
+    // 强制重新部署 v2
+    setTimeout(() => {
+      SoundEngine.play(suggestSound);
+    }, 500);
+  }
+
+  switch(s.type){
+    case 'gentle-sleep':
+      html += buildGentleSleep();
+      break;
+    case 'gentle-anxious':
+      html += buildGentleAnxious();
+      break;
+    case 'gentle-down':
+      html += buildGentleDown();
+      break;
+    case 'gentle-lonely':
+      html += buildGentleLonely();
+      break;
+    case 'gentle-peoplepleaser':
+      html += buildGentlePeoplePleaser();
+      break;
+    case 'gentle-overwhelm':
+      html += buildGentleOverwhelm();
+      break;
+  }
+
+  container.innerHTML = html;
+  goToPage('page-aid');
+
+
+
+  // 启动互动
+  switch(s.type){
+    case 'gentle-sleep': startGentleSleep(); break;
+    case 'gentle-anxious': startGentleAnxious(); break;
+    case 'gentle-lonely': startGentleLonely(); break;
+    case 'gentle-down': startGentleDown(); break;
+    case 'gentle-peoplepleaser': startGentlePeoplePleaser(); break;
+  }
+}
+
+// ===== 失眠：篝火 + 极简安抚文案 =====
+function buildGentleSleep(){
+  return `
+    <style>
+      .sleep-content {
+        text-align: center;
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      /* 深夜背景 - 温暖暗调 */
+      .sleep-content::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: 
+          radial-gradient(ellipse at 50% 60%, rgba(180, 140, 100, 0.08) 0%, transparent 50%),
+          linear-gradient(180deg, #1a1512 0%, #231c15 100%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      /* 篝火微光 - 更温暖、更明显 */
+      .fire-glow {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50vh;
+        background: radial-gradient(ellipse at 50% 100%, 
+          rgba(255, 160, 80, 0.35) 0%, 
+          rgba(240, 130, 60, 0.22) 20%,
+          rgba(200, 100, 50, 0.12) 40%,
+          rgba(160, 80, 40, 0.05) 60%,
+          transparent 80%);
+        pointer-events: none;
+        z-index: 0;
+        animation: fireBreath1 5.2s ease-in-out infinite;
+      }
+      .fire-glow::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 35% 100%, 
+          rgba(255, 180, 100, 0.25) 0%, 
+          rgba(255, 150, 70, 0.12) 35%,
+          transparent 60%);
+        animation: fireBreath2 7.1s ease-in-out infinite;
+      }
+      .fire-glow::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 65% 100%, 
+          rgba(255, 140, 60, 0.22) 0%, 
+          rgba(220, 110, 50, 0.1) 30%,
+          transparent 55%);
+        animation: fireBreath3 4.7s ease-in-out infinite;
+      }
+      /* 中心亮点 - 模拟火焰核心 */
+      .fire-core {
+        position: absolute;
+        bottom: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 60px;
+        background: radial-gradient(ellipse at 50% 100%,
+          rgba(255, 200, 140, 0.5) 0%,
+          rgba(255, 170, 100, 0.3) 30%,
+          transparent 70%);
+        filter: blur(8px);
+        animation: fireCore 3s ease-in-out infinite;
+        pointer-events: none;
+      }
+      @keyframes fireCore {
+        0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
+        50% { opacity: 0.9; transform: translateX(-50%) scaleY(1.2); }
+      }
+      /* 三层不规则动画，模拟真实火焰的跳动 */
+      @keyframes fireBreath1 {
+        0%, 100% { opacity: 0.7; transform: scaleY(1) scaleX(1); }
+        25% { opacity: 1; transform: scaleY(1.15) scaleX(1.05); }
+        50% { opacity: 0.85; transform: scaleY(1.08) scaleX(0.98); }
+        75% { opacity: 1; transform: scaleY(1.2) scaleX(1.03); }
+      }
+      @keyframes fireBreath2 {
+        0%, 100% { opacity: 0.55; transform: scaleY(0.95) scaleX(1.02); }
+        33% { opacity: 0.9; transform: scaleY(1.25) scaleX(0.95); }
+        66% { opacity: 0.75; transform: scaleY(1.1) scaleX(1.08); }
+      }
+      @keyframes fireBreath3 {
+        0%, 100% { opacity: 0.65; transform: scaleY(1.02) scaleX(0.98); }
+        20% { opacity: 0.8; transform: scaleY(1.12) scaleX(1.04); }
+        45% { opacity: 0.95; transform: scaleY(1.2) scaleX(0.96); }
+        70% { opacity: 0.7; transform: scaleY(1.08) scaleX(1.02); }
+      }
+      /* 陪伴文案 - 更淡更轻 */
+      .companion-line {
+        font-size: 0.9rem !important;
+        color: rgba(200, 175, 150, 0.5) !important;
+        margin-top: 2.5rem !important;
+        font-weight: 300 !important;
+        letter-spacing: 0.05em !important;
+      }
+      .sleep-lines {
+        text-align: center;
+        padding: 0 2rem 6rem;
+        max-width: 320px;
+      }
+      .sleep-lines p {
+        font-size: 1.2rem;
+        color: rgba(220, 200, 180, 0.9);
+        line-height: 2.4;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 2.5s ease-in, transform 2.5s ease-in;
+        margin: 0.6rem 0;
+        font-weight: 300;
+      }
+      .sleep-lines p.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .sleep-hint {
+        font-size: 0.75rem;
+        color: rgba(200, 180, 160, 0.6);
+        opacity: 0;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        transition: opacity 2s ease-in;
+        position: relative;
+        z-index: 1;
+      }
+      .sleep-hint.show {
+        opacity: 1;
+      }
+    </style>
+    <div class="sleep-content">
+      <div class="fire-glow">
+        <div class="fire-core"></div>
+      </div>
+      <div class="sleep-lines" id="sleepLines">
+        <p id="sleepL1">不用急着睡着</p>
+        <p id="sleepL2">就这样躺着也好</p>
+        <p id="sleepL3">明天的事</p>
+        <p id="sleepL4">明天再说</p>
+        <p id="sleepL5">现在</p>
+        <p id="sleepL6">只需要休息</p>
+        <p id="sleepL7" class="companion-line">我在这里</p>
+      </div>
+      <div class="sleep-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
+        <button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button>
+      </div>
+    </div>
+  `;
+}
+
+function startGentleSleep(){
+  // 篝火声 - 温暖陪伴
+  SoundEngine.play('fireplace');
+  SoundEngine.setVolume(0.25);
+
+  const lines = document.querySelectorAll('#sleepLines p');
+  const hint = document.getElementById('sleepHint');
+  const fireGlow = document.querySelector('.fire-glow');
+  
+  // 7行文案（6行主文案+1行陪伴文案），缓慢浮现
+  const delays = [800, 4000, 8000, 13000, 18000, 24000, 30000];
+  delays.forEach((delay, i) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById('sleepL' + (i + 1));
+      if (el) el.classList.add('show');
+    }, delay));
+  });
+  
+  // 35秒后显示提示
+  addTimer(setTimeout(() => {
+    if (hint) hint.classList.add('show');
+  }, 35000));
+
+  // 60秒后开始屏幕微暗，90秒更暗，120秒几乎全黑但微光还在
+  const startTime = performance.now();
+  addTimer(setInterval(() => {
+    if (!document.getElementById('sleepLines')) return;
+    const elapsed = (performance.now() - startTime) / 1000;
+    const page = document.getElementById('page-aid');
+    if (!page) return;
+    
+    if (elapsed > 60 && elapsed <= 90) {
+      // 60-90秒：微暗阶段
+      const darkness = (elapsed - 60) / 30 * 0.35;
+      page.style.background = 'rgba(15,15,20,' + darkness + ')';
+    } else if (elapsed > 90 && elapsed <= 120) {
+      // 90-120秒：更暗阶段
+      const darkness = 0.35 + (elapsed - 90) / 30 * 0.4;
+      page.style.background = 'rgba(15,15,20,' + darkness + ')';
+    } else if (elapsed > 120) {
+      // 120秒后：几乎全黑，但微光还在
+      page.style.background = 'rgba(15,15,20,0.82)';
+    }
+  }, 500));
+
+  // 90秒后文字渐隐，但陪伴文案和微光留下
+  addTimer(setTimeout(() => {
+    lines.forEach((line, index) => {
+      // 保留陪伴文案（最后一行）
+      if (index < lines.length - 1) {
+        line.style.transition = 'opacity 4s ease-out';
+        line.style.opacity = '0';
+      } else {
+        // 陪伴文案变淡但不消失
+        line.style.transition = 'opacity 4s ease-out';
+        line.style.opacity = '0.3';
+      }
+    });
+    if (hint) { hint.style.transition = 'opacity 4s'; hint.style.opacity = '0'; }
+  }, 90000));
+
+  // 120秒后微光变得更柔和（像火慢慢变小）
+  addTimer(setTimeout(() => {
+    if (fireGlow) {
+      fireGlow.style.transition = 'opacity 8s ease-out';
+      fireGlow.style.opacity = '0.5';
+    }
+  }, 120000));
+}
+
+// ===== 焦虑：温暖的呼吸光晕（接纳而非改变） =====
+// 核心：温暖的色调 + 缓慢的呼吸节奏 + 接纳性文案
+// 不是"治疗"焦虑，而是允许它存在
+function buildGentleAnxious(){
+  return `
+    <style>
+      /* 焦虑场景 - 纯黑背景，只保留底部篝火 */
+      .anxious-scene {
+        text-align: center;
+        padding: 1rem 0;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #000000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      /* 焦虑场景 - 全屏篝火火焰效果（柔和版） */
+      .anxious-fire-glow {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        background: 
+          radial-gradient(ellipse at 50% 100%, 
+            rgba(255, 140, 60, 0.25) 0%, 
+            rgba(255, 100, 40, 0.15) 15%,
+            rgba(200, 80, 30, 0.08) 35%,
+            transparent 60%),
+          radial-gradient(ellipse at 30% 100%, 
+            rgba(255, 160, 80, 0.2) 0%, 
+            rgba(240, 120, 50, 0.1) 20%,
+            transparent 50%),
+          radial-gradient(ellipse at 70% 100%, 
+            rgba(255, 120, 50, 0.2) 0%, 
+            rgba(220, 90, 40, 0.1) 18%,
+            transparent 48%);
+        pointer-events: none;
+        z-index: 0;
+        animation: anxiousFireBreath1 4.2s ease-in-out infinite;
+        transform-origin: 50% 100%;
+      }
+      .anxious-fire-glow::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -20%;
+        right: -20%;
+        height: 80%;
+        background: 
+          radial-gradient(ellipse at 40% 100%, 
+            rgba(255, 180, 100, 0.22) 0%, 
+            rgba(255, 140, 70, 0.12) 25%,
+            transparent 55%),
+          radial-gradient(ellipse at 60% 100%, 
+            rgba(255, 160, 90, 0.2) 0%, 
+            rgba(240, 130, 60, 0.1) 22%,
+            transparent 52%);
+        animation: anxiousFireBreath2 5.7s ease-in-out infinite;
+        transform-origin: 50% 100%;
+      }
+      .anxious-fire-glow::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -30%;
+        right: -30%;
+        height: 90%;
+        background: 
+          radial-gradient(ellipse at 25% 100%, 
+            rgba(255, 200, 120, 0.18) 0%, 
+            rgba(255, 160, 80, 0.08) 20%,
+            transparent 45%),
+          radial-gradient(ellipse at 75% 100%, 
+            rgba(255, 140, 70, 0.18) 0%, 
+            rgba(220, 110, 50, 0.08) 18%,
+            transparent 42%);
+        animation: anxiousFireBreath3 3.9s ease-in-out infinite;
+        transform-origin: 50% 100%;
+      }
+      @keyframes anxiousFireBreath1 {
+        0%, 100% { 
+          opacity: 0.7; 
+          transform: scaleY(1) scaleX(1) translateY(0);
+        }
+        25% { 
+          opacity: 0.9; 
+          transform: scaleY(1.2) scaleX(1.08) translateY(-2%);
+        }
+        50% { 
+          opacity: 0.8; 
+          transform: scaleY(1.1) scaleX(0.95) translateY(1%);
+        }
+        75% { 
+          opacity: 0.85; 
+          transform: scaleY(1.25) scaleX(1.03) translateY(-1%);
+        }
+      }
+      @keyframes anxiousFireBreath2 {
+        0%, 100% { 
+          opacity: 0.5; 
+          transform: scaleY(1) scaleX(1) translateX(0);
+        }
+        33% { 
+          opacity: 0.75; 
+          transform: scaleY(1.3) scaleX(1.12) translateX(-3%);
+        }
+        66% { 
+          opacity: 0.6; 
+          transform: scaleY(1.15) scaleX(0.92) translateX(2%);
+        }
+      }
+      @keyframes anxiousFireBreath3 {
+        0%, 100% { 
+          opacity: 0.4; 
+          transform: scaleY(1) scaleX(1);
+        }
+        20% { 
+          opacity: 0.65; 
+          transform: scaleY(1.35) scaleX(1.15);
+        }
+        45% { 
+          opacity: 0.5; 
+          transform: scaleY(1.08) scaleX(0.88);
+        }
+        70% { 
+          opacity: 0.7; 
+          transform: scaleY(1.2) scaleX(1.08);
+        }
+      }
+      /* 文字区域 */
+      .anxious-lines {
+        text-align: center;
+        padding: 0 1rem;
+        max-width: 320px;
+        margin: auto;
+        z-index: 2;
+      }
+      .anxious-lines p {
+        font-size: 1.05rem;
+        color: rgba(220, 200, 180, 0.92);
+        line-height: 2.2;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 2.5s ease-in, transform 2.5s ease-in;
+      }
+      .anxious-lines p.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .anxious-lines p.dim {
+        opacity: 0.2;
+        transition: opacity 3s ease-out;
+      }
+    </style>
+    <div class="anxious-scene">
+      <div class="anxious-fire-glow"></div>
+      <div class="anxious-lines" id="anxiousLines">
+        <p id="axL0" class="freq-hint"></p>
+        <p id="axL1">你的大脑转得很快</p>
+        <p id="axL2">停不下来</p>
+        <p id="axL3">不用想明白为什么</p>
+        <p id="axL4">就这样</p>
+        <p id="axL5">让它来</p>
+        <p id="axL6">让它走</p>
+        <p id="axL7" style="margin-top:2rem;font-size:0.9rem;color:rgba(220,200,180,0.6);">每次你允许它来，就是在保护你的身体</p>
+        <p id="axL8" style="margin-top:3rem;font-size:0.85rem;color:rgba(200,180,160,0.45);font-weight:300;">就这样待着，音乐还在</p>
+      </div>
+      <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经在保护自己了 💙</p>
+      <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;">
+        <button class="btn-primary" onclick="goToPage('page-ending')" style="pointer-events:auto;position:relative;z-index:101;padding:0.7rem 1.8rem;font-size:0.9rem;">好一点了 🌤️</button>
+        <div style="margin-top:0.5rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="pointer-events:auto;position:relative;z-index:101;padding:0.5rem 1.2rem;font-size:0.8rem;">换一个感觉</button></div>
+      </div>
+    </div>
+  `;
+}
+
+function startGentleAnxious(){
+  // 频率检测 - 从 localStorage 读取今日焦虑次数
+  const today = new Date().toDateString();
+  const storageKey = 'anxiety_count_' + today;
+  let anxietyCount = parseInt(localStorage.getItem(storageKey) || '0');
+  anxietyCount++;
+  localStorage.setItem(storageKey, anxietyCount.toString());
+
+  // 根据频率设置提示语
+  const freqHintEl = document.getElementById('axL0');
+  if (freqHintEl) {
+    if (anxietyCount === 1) {
+      freqHintEl.textContent = '';
+      freqHintEl.style.display = 'none';
+    } else if (anxietyCount <= 3) {
+      freqHintEl.textContent = '今天有点辛苦';
+    } else {
+      freqHintEl.textContent = '这种模式持续一段时间了';
+    }
+  }
+
+  // 篝火声 - 温暖陪伴底层
+  SoundEngine.play('fireplace');
+  SoundEngine.setVolume(0.20);
+
+  // 彩虹钢琴曲，2秒后轻柔渐入
+  addTimer(setTimeout(() => {
+    SoundEngine.playLayer('rainbow-piano', 0.15);
+  }, 2000));
+
+  // 9行文案依次显示（根据频率可能只有8行），节奏放慢配合音乐
+  const delays = [800, 3500, 6500, 10000, 14000, 18000, 22000, 27000, 35000];
+  const scrollContainer = document.querySelector('.aid-scroll');
+  delays.forEach((delay, i) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById('axL' + i);
+      if (el && el.textContent) {
+        el.classList.add('show');
+        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
+          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
+      }
+    }, delay));
+  });
+
+  // 部分文案淡暗（节奏同步延长）
+  const dimPairs = [[8000, 'axL2'], [13000, 'axL3']];
+  dimPairs.forEach(([delay, id]) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('dim');
+    }, delay));
+  });
+
+  // 40秒后显示按钮区域（文案全部显示完后）
+  addTimer(setTimeout(() => {
+    const actions = document.getElementById('anxiousActions');
+    if (actions) actions.style.opacity = '1';
+  }, 40000));
+
+  // 音乐结束时（3分30秒），文字消失后显示鼓励语
+  addTimer(setTimeout(() => {
+    const linesContainer = document.getElementById('anxiousLines');
+    if (linesContainer) {
+      linesContainer.style.transition = 'opacity 6s ease-out';
+      linesContainer.style.opacity = '0';
+    }
+    // 文字完全消失后，显示鼓励语
+    addTimer(setTimeout(() => {
+      const encouragement = document.getElementById('axEncouragement');
+      if (encouragement) {
+        encouragement.style.opacity = '1';
+      }
+    }, 6000));
+  }, 200000)); // 3分20秒开始淡出，3分30秒音乐结束时鼓励语显现
+}
+
+// ===== 心里堵/低落：纯文字引导（情绪标注 Affect Labeling） =====
+function buildGentleDown(){
+  return `
+    <style>
+      /* 心里堵场景 - 纯文字，极简，暖色调 */
+      .down-scene {
+        text-align: center;
+        padding: 1rem 0;
+        width: 100%;
+        position: relative;
+      }
+      /* 极淡暖色背景渐变 */
+      .down-scene::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 30%, rgba(220, 180, 140, 0.08) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      .down-lines {
+        text-align: center;
+        padding: 0 1rem 6rem;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .down-lines p:first-child {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .down-lines p {
+        font-size: 1.05rem;
+        color: rgba(220, 200, 180, 0.92);
+        line-height: 2.2;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 2.8s ease-in, transform 2.8s ease-in;
+      }
+      .down-lines p.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .down-lines p.dim {
+        opacity: 0.2;
+        transition: opacity 3.5s ease-out;
+      }
+      /* 心里堵场景按钮区域 */
+      .down-actions {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+    </style>
+    <div class="down-scene">
+      <div class="down-lines" id="downLines">
+        <p id="downL0">😔</p>
+        <p id="downL1">我看见你了</p>
+        <p id="downL2">不用解释为什么</p>
+        <p id="downL3">你的感受是真实的</p>
+        <p id="downL4">感受一下</p>
+        <p id="downL5">它在身体的哪个位置</p>
+        <p id="downL6">胸口，还是胃里</p>
+        <p id="downL7">不用改变它</p>
+        <p id="downL8">就这样待着</p>
+        <p id="downL9">它会自己走开的</p>
+        <p id="downL10">你什么都不用做</p>
+      </div>
+      <div class="down-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
+        <button class="btn-primary" onclick="goToPage('page-ending')" style="padding:0.55rem 1.4rem;font-size:0.8rem;">好一点了 🌤️</button>
+        <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
+      </div>
+    </div>
+  `;
+}
+
+function startGentleDown(){
+  // 极淡白噪音
+  SoundEngine.play('rain-drops');
+  SoundEngine.setVolume(0.12);
+
+  // 背景音乐层，2秒后渐入
+  const musicOptions = ['calm-music', 'healing-music', 'soul-healing-music'];
+  const chosenMusic = musicOptions[Math.floor(Math.random() * musicOptions.length)];
+  addTimer(setTimeout(() => {
+    SoundEngine.playLayer(chosenMusic, 0.15);
+  }, 2000));
+
+  // 11行文案，间隔从2s均匀拉长到3.5s，总共~32秒
+  // delays: 0.8, 2.8, 5.3, 8.3, 11.8, 15.3, 18.8, 22.3, 26.3, 30.3, 33.8
+  const delays = [800, 2800, 5300, 8300, 11800, 15300, 18800, 22300, 26300, 30300, 33800];
+  const scrollContainer = document.querySelector('.aid-scroll');
+  delays.forEach((delay, i) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById('downL' + i);
+      if (el) {
+        el.classList.add('show');
+        // 自动滚动到可见区域
+        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
+          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
+      }
+    }, delay));
+  });
+
+  // 文案淡暗——新句出现2秒后，前面隔2句的旧句淡暗
+  // L1(L2出现后2s) L2(L4出现后2s) L4(L6出现后2s) L6(L8出现后2s)
+  const dimPairs = [[10000, 'downL1'], [14000, 'downL2'], [22000, 'downL4'], [27000, 'downL6'], [32000, 'downL8']];
+  dimPairs.forEach(([delay, id]) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('dim');
+    }, delay));
+  });
+}
+
+// ===== 孤独：星空下的陪伴 =====
+function buildGentleLonely(){
+  return `
+    <style>
+      .lonely-scene {
+        text-align: center;
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      /* 深夜星空背景 - 午夜蓝调亮 */
+      .lonely-scene::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: 
+          radial-gradient(ellipse at 30% 20%, rgba(140, 180, 240, 0.12) 0%, transparent 50%),
+          radial-gradient(ellipse at 70% 30%, rgba(120, 160, 220, 0.08) 0%, transparent 45%),
+          radial-gradient(ellipse at 50% 80%, rgba(100, 140, 200, 0.06) 0%, transparent 60%),
+          linear-gradient(180deg, #151d2e 0%, #1e2840 50%, #151d2e 100%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      /* 星星容器 */
+      .stars-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      /* 星星 - 更亮更明显 */
+      .star {
+        position: absolute;
+        background: rgba(240, 235, 220, 1);
+        border-radius: 50%;
+        box-shadow: 0 0 6px rgba(240, 235, 220, 0.8), 0 0 12px rgba(200, 220, 255, 0.4);
+        animation: starTwinkle 3s ease-in-out infinite;
+      }
+      @keyframes starTwinkle {
+        0%, 100% { opacity: 0.4; transform: scale(0.9); box-shadow: 0 0 4px rgba(240, 235, 220, 0.5); }
+        50% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 10px rgba(240, 235, 220, 1), 0 0 20px rgba(200, 220, 255, 0.6); }
+      }
+      .lonely-lines {
+        text-align: center;
+        padding: 0 2rem;
+        max-width: 320px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .lonely-lines p {
+        font-size: 1.35rem;
+        color: rgba(235, 225, 205, 0.95);
+        line-height: 2.4;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 3s ease-in, transform 3s ease-in;
+        margin: 0.5rem 0;
+        font-weight: 350;
+        letter-spacing: 0.03em;
+      }
+      .lonely-lines p.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .lonely-lines p.dim {
+        opacity: 0.15;
+        transition: opacity 4s ease-out;
+      }
+      .lonely-lines {
+        padding-bottom: 6rem;
+      }
+    </style>
+    <div class="lonely-scene">
+      <div class="stars-container" id="starsContainer"></div>
+      <div class="lonely-lines" id="lonelyLines">
+        <p id="lonelyL1">远处有一盏灯</p>
+        <p id="lonelyL2">有人在</p>
+        <p id="lonelyL3">你不是一个人</p>
+        <p id="lonelyL4">此刻</p>
+        <p id="lonelyL5">也有人和你一样</p>
+        <p id="lonelyL6">在看着同样的光 💫</p>
+        <p id="lonelyL7">你们在一起</p>
+      </div>
+      <div class="lonely-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
+        <button class="btn-primary" onclick="goToPage('page-ending')" style="padding:0.55rem 1.4rem;font-size:0.8rem;">好一点了 🌤️</button>
+        <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
+      </div>
+    </div>
+  `;
+}
+
+function startGentleLonely(){
+  // 生成星星
+  const starsContainer = document.getElementById('starsContainer');
+  if (starsContainer) {
+    const starPositions = [
+      { top: '15%', left: '10%', size: 2, delay: '0s' },
+      { top: '22%', left: '25%', size: 1.5, delay: '0.5s' },
+      { top: '12%', left: '45%', size: 2.5, delay: '1s' },
+      { top: '18%', left: '65%', size: 1.8, delay: '1.5s' },
+      { top: '25%', left: '80%', size: 2, delay: '2s' },
+      { top: '35%', left: '15%', size: 1.2, delay: '0.3s' },
+      { top: '30%', left: '55%', size: 1.6, delay: '0.8s' },
+      { top: '40%', left: '88%', size: 1.4, delay: '1.3s' },
+      { top: '8%', left: '75%', size: 1.8, delay: '1.8s' },
+      { top: '20%', left: '5%', size: 1.3, delay: '2.3s' },
+      { top: '32%', left: '35%', size: 1.5, delay: '2.8s' },
+      { top: '28%', left: '92%', size: 1.2, delay: '3.2s' }
+    ];
+    
+    starPositions.forEach(pos => {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = pos.top;
+      star.style.left = pos.left;
+      star.style.width = pos.size + 'px';
+      star.style.height = pos.size + 'px';
+      star.style.animationDelay = pos.delay;
+      starsContainer.appendChild(star);
+    });
+  }
+
+  // 篝火声——温暖陪伴
+  SoundEngine.play('fireplace');
+  SoundEngine.setVolume(0.22);
+
+  // 钢琴背景音乐（蒲公英的约定），2秒后渐入
+  addTimer(setTimeout(() => {
+    SoundEngine.playLayer('piano-dandelion', 0.16);
+  }, 2000));
+
+  // 9行文案，间隔拉长以匹配钢琴曲长度
+  const delays = [800, 4500, 9000, 14000, 19500, 25500, 32000, 39000, 46000];
+  const scrollContainer = document.querySelector('.aid-scroll');
+  delays.forEach((delay, i) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById('lonelyL' + (i + 1));
+      if (el) {
+        el.classList.add('show');
+        // 自动滚动到可见区域
+        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
+          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
+      }
+    }, delay));
+  });
+
+  // 文案淡暗（调整时间匹配新的显示节奏）
+  const dimPairs = [[15000, 'lonelyL1'], [21000, 'lonelyL2'], [28000, 'lonelyL4'], [36000, 'lonelyL5']];
+  dimPairs.forEach(([delay, id]) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('dim');
+    }, delay));
+  });
+
+  // 音乐结束时（1分18秒），文字缓慢消失，只留按钮
+  addTimer(setTimeout(() => {
+    const linesContainer = document.getElementById('lonelyLines');
+    if (linesContainer) {
+      linesContainer.style.transition = 'opacity 8s ease-out';
+      linesContainer.style.opacity = '0';
+    }
+  }, 68000));
+}
+
+// ===== 用户反馈组件 =====
+function buildFeedbackSection() {
+  return `
+    <div class="feedback-section" id="feedbackSection">
+      <div class="feedback-title">现在感觉怎么样？</div>
+      <div class="feedback-buttons">
+        <button class="feedback-btn" data-value="helpful" onclick="submitFeedback('helpful')">🌙 平静一些了</button>
+        <button class="feedback-btn" data-value="not-helpful" onclick="submitFeedback('not-helpful')">😔 还是一样</button>
+      </div>
+      <textarea class="feedback-textarea" id="feedbackText" rows="2" placeholder="想说什么都可以（可选）"></textarea>
+      <button class="feedback-submit" onclick="submitFeedbackWithText()">就这样吧</button>
+    </div>
+  `;
+}
+
+let currentFeedback = null;
+function submitFeedback(value) {
+  currentFeedback = value;
+  document.querySelectorAll('.feedback-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === value);
+  });
+}
+
+function submitFeedbackWithText() {
+  const text = document.getElementById('feedbackText').value;
+  const section = document.getElementById('feedbackSection');
+  
+  // 保存到本地存储（后续可以同步到服务器）
+  const feedbackData = {
+    feedback: currentFeedback,
+    text: text,
+    scene: currentScene,
+    time: new Date().toISOString(),
+    userAgent: navigator.userAgent
+  };
+  
+  // 获取已有反馈
+  let allFeedback = JSON.parse(localStorage.getItem('emotionFeedback') || '[]');
+  allFeedback.push(feedbackData);
+  localStorage.setItem('emotionFeedback', JSON.stringify(allFeedback));
+  
+  // 显示感谢
+  section.innerHTML = '<div class="feedback-thanks">💚 感谢你的反馈，会让我们做得更好</div>';
+  
+  console.log('反馈已保存:', feedbackData);
+}
+
+// ===== 结束页反馈 =====
+let endingFeedbackValue = null;
+function submitEndingFeedback(value) {
+  endingFeedbackValue = value;
+  document.querySelectorAll('.ending-feedback-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+function submitEndingFeedbackWithText() {
+  const text = document.getElementById('endingFeedbackText').value;
+  const section = document.getElementById('endingFeedback');
+  
+  const feedbackData = {
+    feedback: endingFeedbackValue,
+    text: text,
+    scene: currentScene,
+    time: new Date().toISOString(),
+    userAgent: navigator.userAgent
+  };
+  
+  let allFeedback = JSON.parse(localStorage.getItem('emotionFeedback') || '[]');
+  allFeedback.push(feedbackData);
+  localStorage.setItem('emotionFeedback', JSON.stringify(allFeedback));
+  
+  section.innerHTML = '<div style="padding:1rem;color:var(--warm-1);font-size:0.9rem;">💚 感谢你的反馈，会让我们做得更好</div>';
+  
+  console.log('结束页反馈已保存:', feedbackData);
+}
+
+// ===== 总是为别人着想：纯文字沉浸体验 =====
+function buildGentlePeoplePleaser(){
+  return `
+    <style>
+      .peoplepleaser-scene {
+        text-align: center;
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      /* 深夜暖灯氛围 - 像被一盏台灯轻轻照亮（加强版） */
+      .peoplepleaser-scene::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: 
+          radial-gradient(ellipse at 50% 40%, rgba(220, 170, 110, 0.22) 0%, rgba(200, 150, 90, 0.1) 30%, transparent 55%),
+          radial-gradient(ellipse at 50% 55%, rgba(190, 145, 85, 0.12) 0%, transparent 50%),
+          linear-gradient(180deg, #1a1512 0%, #231c15 50%, #1a1512 100%);
+        pointer-events: none;
+        z-index: -1;
+        animation: warmLightBreath 6s ease-in-out infinite;
+      }
+      @keyframes warmLightBreath {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+      }
+      .peoplepleaser-lines {
+        text-align: center;
+        padding: 0 2rem;
+        max-width: 340px;
+        margin: 0 auto;
+      }
+      .peoplepleaser-lines p {
+        font-size: 1.25rem;
+        color: rgba(212, 184, 150, 0.95);
+        line-height: 2.8;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 3s ease-in, transform 3s ease-in;
+        margin: 0.5rem 0;
+        letter-spacing: 0.02em;
+        font-weight: 300;
+      }
+      .peoplepleaser-lines p.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .peoplepleaser-lines p.dim {
+        opacity: 0.12;
+        transition: opacity 5s ease-out;
+      }
+      /* 当前聚焦的行 - 更亮更实 */
+      .peoplepleaser-lines p.focus {
+        opacity: 1;
+        color: rgba(225, 200, 170, 1);
+        text-shadow: 0 0 30px rgba(200, 160, 100, 0.2);
+        transition: all 2s ease;
+      }
+      /* 最后一行 - 收尾 */
+      .peoplepleaser-lines p:last-child {
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        color: rgba(200, 175, 145, 0.75);
+      }
+      .peoplepleaser-lines {
+        padding-bottom: 6rem;
+      }
+    </style>
+    <div class="peoplepleaser-scene">
+      <div class="peoplepleaser-lines" id="peoplepleaserLines">
+        <p id="ppL1">我注意到，你把别人的感受放在自己前面</p>
+        <p id="ppL2">这不是缺点</p>
+        <p id="ppL3">是你太温柔</p>
+        <p id="ppL4">但温柔的人也需要被温柔对待</p>
+        <p id="ppL5">包括被你自己</p>
+        <p id="ppL6">现在，把手放在胸口</p>
+        <p id="ppL7">感受自己的心跳</p>
+        <p id="ppL8">它一直在为你跳动</p>
+        <p id="ppMusicHint" style="margin-top:2rem;font-size:0.85rem;color:rgba(200,180,160,0.6);opacity:0;transition:opacity 3s ease;">音乐还在继续，你可以就这样待着 🎵</p>
+      </div>
+      <p id="ppEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你值得被温柔对待 💛</p>
+      <div class="peoplepleaser-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
+        <button class="btn-primary" onclick="goToPage('page-ending')" style="padding:0.55rem 1.4rem;font-size:0.8rem;">好一点了 🌤️</button>
+        <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
+      </div>
+    </div>
+  `;
+}
+
+function startGentlePeoplePleaser(){
+  // 篝火声打底——温暖陪伴
+  SoundEngine.play('fireplace');
+  SoundEngine.setVolume(0.18);
+
+  // 周杰伦钢琴曲层，2秒后轻柔渐入
+  addTimer(setTimeout(() => {
+    SoundEngine.playLayer('piano-secret', 0.15);
+  }, 2000));
+
+  // 8行文案（从ppL1开始），配合5分钟音乐
+  const delays = [800, 6000, 14000, 24000, 36000, 50000, 66000, 85000];
+  const scrollContainer = document.querySelector('.aid-scroll');
+  delays.forEach((delay, i) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById('ppL' + (i + 1));
+      if (el) {
+        el.classList.add('show');
+        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
+          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
+      }
+    }, delay));
+  });
+
+  // 文案淡暗（时间对应新的节奏）
+  const dimPairs = [[20000, 'ppL1'], [28000, 'ppL2'], [40000, 'ppL3'], [58000, 'ppL5'], [72000, 'ppL6'], [90000, 'ppL8']];
+  dimPairs.forEach(([delay, id]) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('dim');
+    }, delay));
+  });
+
+  // 文字显示完后（约1分25秒），提示音乐还在继续
+  addTimer(setTimeout(() => {
+    const musicHint = document.getElementById('ppMusicHint');
+    if (musicHint) {
+      musicHint.style.opacity = '1';
+    }
+  }, 95000));
+
+  // 音乐结束时（4分50秒开始淡出），文字消失后显示鼓励语
+  addTimer(setTimeout(() => {
+    const linesContainer = document.getElementById('peoplepleaserLines');
+    const musicHint = document.getElementById('ppMusicHint');
+    if (linesContainer) {
+      linesContainer.style.transition = 'opacity 6s ease-out';
+      linesContainer.style.opacity = '0';
+    }
+    if (musicHint) {
+      musicHint.style.transition = 'opacity 6s ease-out';
+      musicHint.style.opacity = '0';
+    }
+    // 文字完全消失后，显示鼓励语
+    addTimer(setTimeout(() => {
+      const encouragement = document.getElementById('ppEncouragement');
+      if (encouragement) {
+        encouragement.style.opacity = '1';
+      }
+    }, 6000));
+  }, 290000));
+}
+
+// ===== 撑不住了：极简安全网 =====
+function buildGentleOverwhelm(){
+  return `
+    <div style="margin-top:0.5rem;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;line-height:1;" id="overwhelmEmoji">🫂</div>
+      <p style="font-size:0.92rem;color:var(--text-secondary);line-height:2;" id="overwhelmMsg">
+        你现在不需要做任何事<br>不需要冷静<br>不需要坚强
+      </p>
+      <div style="margin-top:1.5rem;padding:1rem;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+        <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.9;">
+          只需要做一件事<br>
+          把手放在胸口<br>
+          感受自己的心跳<br>
+          它一直在努力地跳着<br>
+          <b style="color:var(--text-secondary);">为了你</b>
+        </p>
+      </div>
+      <div style="margin-top:1.5rem;padding:0.8rem 1rem;border-radius:10px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);">
+        <p style="font-size:0.78rem;color:#ff8a8a;line-height:1.8;">
+          如果你觉得撑不住了<br>
+          可以拨打 <b>24 小时心理援助热线</b><br>
+          <b style="font-size:1.1rem;">400-161-9995</b><br>
+          <span style="opacity:0.7;">有人在那头等着接你的电话</span>
+        </p>
+      </div>
+      <div style="margin-top:1.5rem;text-align:center;">
+        <button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button>
+      </div>
+    </div>
+  `;
+}
+function buildMuscleRelax(){
+  return `
+    <div class="muscle-guide">
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.8rem;text-align:center;">
+        先绷紧全身 → 再瞬间释放<br>你会感受到明显的放松
+      </p>
+      <div class="muscle-step" id="ms0">
+        <span class="m-num">1</span>
+        <span>深吸一口气</span>
+      </div>
+      <div class="muscle-step" id="ms1">
+        <span class="m-num">2</span>
+        <span>同时握紧拳头、耸起肩膀、咬紧牙关、绷紧脚趾</span>
+      </div>
+      <div class="muscle-step" id="ms2">
+        <span class="m-num">3</span>
+        <span>保持这个状态 5 秒…感受紧张</span>
+      </div>
+      <div class="muscle-step" id="ms3">
+        <span class="m-num">4</span>
+        <span>快速呼气，瞬间松开一切</span>
+      </div>
+      <div class="muscle-step" id="ms4">
+        <span class="m-num">5</span>
+        <span>感受放松涌入身体的感觉</span>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <button class="muscle-btn tense" id="muscleBtn" onclick="doMuscleRelax()">🤜 握紧！绷住！</button>
+      <p id="muscleHint" style="font-size:0.78rem;color:var(--text-dim);margin-top:0.5rem;min-height:1.2em;"></p>
+    </div>
+  `;
+}
+
+function doMuscleRelax(){
+  cleanup();
+  const btn=document.getElementById('muscleBtn');
+  const hint=document.getElementById('muscleHint');
+  let step=0;
+
+  function advance(){
+    document.querySelectorAll('.muscle-step').forEach((s,i)=>{
+      s.classList.toggle('active',i===step);
+    });
+
+    if(step===0){
+      btn.textContent='🤜 握紧！绷住！';
+      btn.className='muscle-btn tense';
+      hint.textContent='开始深吸气…';
+      step++;
+      addTimer(setTimeout(advance,1500));
+    } else if(step===1){
+      hint.textContent='握拳、耸肩、咬紧、绷脚…用力！';
+      step++;
+      addTimer(setTimeout(advance,1500));
+    } else if(step===2){
+      hint.textContent='保持住…感受紧张…';
+      step++;
+      addTimer(setTimeout(advance,5000));
+    } else if(step===3){
+      btn.textContent='💨 松开！释放！';
+      btn.className='muscle-btn release';
+      hint.textContent='呼气！松开一切！';
+      step++;
+      addTimer(setTimeout(advance,1500));
+    } else if(step===4){
+      hint.textContent='感受放松的感觉…';
+      addTimer(setTimeout(()=>{
+        hint.textContent='✨ 整个人松了吧？';
+        btn.textContent='🔄 再来一次';
+        step=0;
+      },3000));
+    }
+  }
+  advance();
+}
+
+// ===== 全局变量 =====
+let currentScene = null; // 当前场景，用于反馈
+
+// ===== 声音引擎（播放本地音频文件，支持 mp3/ogg/wav） =====
+
+const SoundEngine = (() => {
+  let currentType = null;
+  let audioEl = null;
+  let bgLayer = null; // 叠加的背景层（低音量）
+  let vol = 0.4;
+
+  // 音频文件映射（相对于 HTML 文件的路径）
+  const soundFiles = {
+    'rain-drops': 'audio/rain-drops.mp3',
+    'calm-music': 'audio/calm-music.mp3',
+    'sleep-music': 'audio/sleep-meditation.mp3',
+    'fireplace': 'audio/fireplace.mp3',
+    'healing-music': 'audio/healing-music.mp3',
+    'rainbow-piano': 'audio/rainbow-piano.mp3',
+    'deep-sleep-music': 'audio/deep-sleep-music.mp3',
+    'soul-healing-music': 'audio/soul-healing-music.mp3',
+    'piano-secret': 'audio/piano-secret.mp3',
+    'piano-dandelion': 'audio/piano-dandelion.mp3',
+    'piano-flowersea': 'audio/piano-flowersea.mp3',
+    'piano-silence': 'audio/piano-silence.mp3'
+  };
+
+  function play(type) {
+    // 先强制停掉当前播放
+    forceStop();
+
+    const file = soundFiles[type];
+    if (!file) return;
+
+    audioEl = new Audio(file);
+    // 冥想引导不循环，其他声音循环
+    audioEl.loop = (type !== 'sleep-music');
+    audioEl.volume = 0;
+    // 冥想引导播完后的回调
+    if (type === 'sleep-music') {
+      audioEl.addEventListener('ended', () => {
+        // 自动过渡到雨滴白噪音（渐入）
+        currentType = null;
+        audioEl = null;
+        play('rain-drops');
+      });
+    }
+    audioEl.play().then(() => {
+      // 渐入 2秒
+      audioEl.volume = 0.01;
+      let t = 0;
+      const step = 20; // 20ms 一步
+      const total = 2000;
+      const iv = setInterval(() => {
+        t += step;
+        if (t >= total) { clearInterval(iv); audioEl.volume = vol; }
+        else { audioEl.volume = vol * (t / total); }
+      }, step);
+    }).catch(e => {
+      console.warn('Audio play failed:', e);
+    });
+
+    currentType = type;
+    document.querySelectorAll('.sound-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.sound === type);
+    });
+  }
+
+  // 叠加播放一个低音量背景层（不替换主音轨）
+  function playLayer(type, layerVol) {
+    stopLayer();
+    const file = soundFiles[type];
+    if (!file) return;
+
+    bgLayer = new Audio(file);
+    bgLayer.loop = false;
+    bgLayer.volume = 0;
+    bgLayer.play().then(() => {
+      // 慢慢渐入，3秒
+      let t = 0;
+      const step = 30;
+      const total = 3000;
+      const iv = setInterval(() => {
+        t += step;
+        if (t >= total) { clearInterval(iv); bgLayer.volume = layerVol || 0.15; }
+        else { bgLayer.volume = (layerVol || 0.15) * (t / total); }
+      }, step);
+    }).catch(e => console.warn('Layer audio failed:', e));
+  }
+
+  function stopLayer() {
+    if (bgLayer) {
+      // 渐出
+      const el = bgLayer;
+      const cur = el.volume;
+      let t = 0;
+      const step = 30;
+      const total = 1000;
+      const iv = setInterval(() => {
+        t += step;
+        if (t >= total) { clearInterval(iv); el.pause(); el.currentTime = 0; }
+        else { el.volume = cur * (1 - t / total); }
+      }, step);
+      bgLayer = null;
+    }
+  }
+
+  function forceStop() {
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl = null;
+    }
+    if (bgLayer) {
+      bgLayer.pause();
+      bgLayer.currentTime = 0;
+      bgLayer = null;
+    }
+    currentType = null;
+    document.querySelectorAll('.sound-chip').forEach(c => c.classList.remove('active'));
+  }
+
+  function stop() {
+    forceStop();
+  }
+
+  function setVolume(v) {
+    vol = v;
+    if (audioEl) audioEl.volume = v;
+    if (bgLayer) bgLayer.volume = v * 0.7; // 音乐始终比白噪音略低
+  }
+
+  return {
+    play,
+    playLayer,
+    stopLayer,
+    stop,
+    setVolume,
+    get currentSound() { return currentType; }
+  };
+})();
+
+function toggleSound(type) {
+  if (SoundEngine.currentSound === type) { SoundEngine.stop(); }
+  else { SoundEngine.play(type); }
+}
+function setSoundVolume(v) { SoundEngine.setVolume(v); }
+
+// 场景推荐声音映射
+const soundSuggestions = {
+  'insomnia': 'sleep-music',
+  'anxious': '', // 焦虑场景在startGentleAnxious中自定义处理
+  'down': 'rain-drops',
+  'lonely': 'rain-drops',
+  'overwhelmed': 'calm-music'
+};
+</script>
+</body>
+</html>
