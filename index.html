@@ -1001,8 +1001,8 @@
 <div class="page active" id="page-home">
   <div class="home-badge">🩹 情绪急救站</div>
   <div class="hero-icon">🌙</div>
-  <h1 class="hero-title">你来了<br>不管是什么</h1>
-  <p class="hero-sub">这里有一个地方<br>你可以待一会儿</p>
+  <h1 class="hero-title">可以在这里<br>待一会儿</h1>
+  <p class="hero-sub">不用急<br>你什么时候来都可以</p>
   <div class="hero-stats">
     <div class="hero-stat">
       <div class="num">30秒</div>
@@ -1376,30 +1376,16 @@ function buildGentleSleep(){
         <div class="fire-core"></div>
       </div>
       <div class="sleep-lines" id="sleepLines">
-        <p id="sleepL1">你睡不着</p>
+        <p id="sleepL1">睡不着</p>
         <p id="sleepL2">脑子一直在转</p>
-        <p id="sleepL3">想今天的事</p>
-        <p id="sleepL4">想明天的事</p>
-        <p id="sleepL5">但身体呢</p>
-        <p id="sleepL6">很累了</p>
-        <p id="sleepL7">你不需要睡着</p>
-        <p id="sleepL8">你只需要让身体休息</p>
-        <p id="sleepL9">深呼吸</p>
-        <p id="sleepL10">很慢地</p>
-        <p id="sleepL11">把气吸进去</p>
-        <p id="sleepL12">再很慢地呼出来</p>
-        <p id="sleepL13">脑子可以继续转</p>
-        <p id="sleepL14">没关系</p>
-        <p id="sleepL15">就让身体待在这里</p>
-        <p id="sleepL16">它累了</p>
-        <p id="sleepL17">它需要休息</p>
-        <p id="sleepL18">这本身就够了</p>
-        <p id="sleepL19">不用睡着</p>
-        <p id="sleepL20">就这样</p>
-        <p id="sleepL21">身体在休息就够了</p>
-        <p id="sleepL22">你愿意停下来</p>
-        <p id="sleepL23">这本身就是一种勇气</p>
-        <p id="sleepL24">我在这里 💛</p>
+        <p id="sleepL3">身体很累</p>
+        <p id="sleepL4">你不需要睡着</p>
+        <p id="sleepL5">只需要让身体休息</p>
+        <p id="sleepL6">深呼吸</p>
+        <p id="sleepL7">很慢地吸进去</p>
+        <p id="sleepL8">很慢地呼出来</p>
+        <p id="sleepL9">脑子可以继续转</p>
+        <p id="sleepL10">没关系，就在这里 💛</p>
       </div>
       <div class="sleep-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
         <button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button>
@@ -1419,10 +1405,10 @@ function startGentleSleep(){
   const lines = document.querySelectorAll('#sleepLines p');
   const fireGlow = document.querySelector('.fire-glow');
   
-  // 24行文案，每行间隔4秒
+  // 10行文案，每行间隔5秒
   const delays = [];
-  for(let i = 0; i < 24; i++) {
-    delays.push(800 + i * 4000);
+  for(let i = 0; i < 10; i++) {
+    delays.push(800 + i * 5000);
   }
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
@@ -1431,7 +1417,7 @@ function startGentleSleep(){
     }, delay));
   });
 
-  // 100秒后开始屏幕微暗
+  // 55秒后开始屏幕微暗（10行×5秒+5秒缓冲）
   const startTime = performance.now();
   addTimer(setInterval(() => {
     if (!document.getElementById('sleepLines')) return;
@@ -1439,13 +1425,13 @@ function startGentleSleep(){
     const page = document.getElementById('page-aid');
     if (!page) return;
     
-    if (elapsed > 100 && elapsed <= 130) {
-      const darkness = (elapsed - 100) / 30 * 0.35;
+    if (elapsed > 55 && elapsed <= 85) {
+      const darkness = (elapsed - 55) / 30 * 0.35;
       page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 130 && elapsed <= 160) {
-      const darkness = 0.35 + (elapsed - 130) / 30 * 0.4;
+    } else if (elapsed > 85 && elapsed <= 115) {
+      const darkness = 0.35 + (elapsed - 85) / 30 * 0.4;
       page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 160) {
+    } else if (elapsed > 115) {
       page.style.background = 'rgba(15,15,20,0.82)';
     }
   }, 500));
@@ -1461,7 +1447,7 @@ function startGentleSleep(){
         line.style.opacity = '0.5';
       }
     });
-  }, 800 + 23 * 4000 + 5000));
+  }, 800 + 9 * 5000 + 5000));
 
   // 火光慢慢变柔和
   addTimer(setTimeout(() => {
@@ -1469,7 +1455,7 @@ function startGentleSleep(){
       fireGlow.style.transition = 'opacity 8s ease-out';
       fireGlow.style.opacity = '0.5';
     }
-  }, 800 + 23 * 4000 + 10000));
+  }, 800 + 9 * 5000 + 10000));
 }
 
 // ===== 焦虑：温暖的呼吸光晕（接纳而非改变） =====
@@ -1636,26 +1622,18 @@ function buildGentleAnxious(){
     <div class="anxious-scene">
       <div class="anxious-fire-glow"></div>
       <div class="anxious-lines" id="anxiousLines">
-        <p id="axL1">你来了</p>
-        <p id="axL2">不用告诉我是什么</p>
-        <p id="axL3">不用解释为什么</p>
-        <p id="axL4">你来了，就够了</p>
-        <p id="axL5">深呼吸</p>
-        <p id="axL6">很慢地</p>
-        <p id="axL7">把气吸进去</p>
-        <p id="axL8">再很慢地呼出来</p>
-        <p id="axL9">再来一次</p>
-        <p id="axL10">这一次</p>
-        <p id="axL11">把注意力放在胸口</p>
-        <p id="axL12">感受那个紧的感觉</p>
-        <p id="axL13">不用赶走它</p>
-        <p id="axL14">不用改变它</p>
-        <p id="axL15">就看着它</p>
-        <p id="axL16">它会来的</p>
-        <p id="axL17">也会走</p>
-        <p id="axL18">你不需要做任何事</p>
-        <p id="axL19">你只需要在这里</p>
-        <p id="axL20">我在这里 💛</p>
+        <p id="axL1">深呼吸</p>
+        <p id="axL2">很慢地吸进去</p>
+        <p id="axL3">很慢地呼出来</p>
+        <p id="axL4">再来一次</p>
+        <p id="axL5">把注意力放在胸口</p>
+        <p id="axL6">感受那个紧的感觉</p>
+        <p id="axL7">不用赶走它</p>
+        <p id="axL8">不用改变它</p>
+        <p id="axL9">它会来的</p>
+        <p id="axL10">也会走</p>
+        <p id="axL11">你只需要在这里</p>
+        <p id="axL12">我在这里 💛</p>
       </div>
       <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经在保护自己了 💙</p>
       <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;opacity:0;">
@@ -1676,10 +1654,10 @@ function startGentleAnxious(){
     SoundEngine.playLayer('piano-dandelion', 0.15);
   }, 2000));
 
-  // 20行文案依次显示
+  // 12行文案依次显示，每行6秒（配合78秒音乐）
   const delays = [];
-  for(let i = 1; i <= 20; i++) {
-    delays.push(800 + (i - 1) * 4000);
+  for(let i = 1; i <= 12; i++) {
+    delays.push(1000 + (i - 1) * 6000);
   }
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
@@ -1714,13 +1692,12 @@ function startGentleAnxious(){
   }, 78000));
 }
 
-// ===== 通用场景：Gabor Mate 风格 - 身体扫描 =====
+// ===== 通用场景：Gabor Mate 风格 - 身体扫描（分阶段版） =====
 function buildGentleSafe(){
   return `
     <style>
       .safe-scene {
         text-align: center;
-        padding: 1rem 0;
         width: 100vw;
         height: 100vh;
         position: fixed;
@@ -1790,14 +1767,14 @@ function buildGentleSafe(){
       <div class="safe-lines" id="safeLines">
         <p id="safeL1">你来了</p>
         <p id="safeL2">不用告诉我是什么</p>
-        <p id="safeL3">不用解释为什么</p>
-        <p id="safeL4">你来了，就够了</p>
-        <p id="safeL5">你愿意停下来</p>
-        <p id="safeL6">这本身就是一种勇气</p>
-        <p id="safeL7">你不是有问题</p>
-        <p id="safeL8">你只是被卡住了</p>
-        <p id="safeL9">你不需要修补自己</p>
-        <p id="safeL10">你只需要被看见</p>
+        <p id="safeL3">你来了，就够了</p>
+        <p id="safeL4">你愿意停下来</p>
+        <p id="safeL5">这本身就是一种勇气</p>
+        <p id="safeL6">你不是有问题</p>
+        <p id="safeL7">你只是被卡住了</p>
+        <p id="safeL8">你不需要修补自己</p>
+        <p id="safeL9">你只需要被看见</p>
+        <p id="safeL10">停下来就是在保护身体</p>
         <p id="safeL11">现在</p>
         <p id="safeL12">感受一下</p>
         <p id="safeL13">你的身体</p>
@@ -1807,27 +1784,33 @@ function buildGentleSafe(){
         <p id="safeL17">不用回答我</p>
         <p id="safeL18">你自己知道就好</p>
         <p id="safeL19">把注意力放在那里</p>
-        <p id="safeL20">深呼吸</p>
-        <p id="safeL21">很慢地</p>
-        <p id="safeL22">每一次你允许自己感受</p>
-        <p id="safeL23">你就是在保护自己的身体</p>
-        <p id="safeL24">它可以在这里</p>
-        <p id="safeL25">你也可以在这里</p>
-        <p id="safeL26">不用改变它</p>
-        <p id="safeL27">不用赶走它</p>
-        <p id="safeL28">不用修复它</p>
-        <p id="safeL29">它想待多久</p>
-        <p id="safeL30">就待多久</p>
-        <p id="safeL31">会来</p>
-        <p id="safeL32">也会走</p>
-        <p id="safeL33">也许不是今天</p>
-        <p id="safeL34">也许是明天</p>
-        <p id="safeL35">也许是下一秒</p>
-        <p id="safeL36">你只需要知道</p>
-        <p id="safeL37">它是被允许的</p>
-        <p id="safeL38">我在这里</p>
-        <p id="safeL39">随时可以再回来</p>
-        <p id="safeL40">待在这里 💛</p>
+        <p id="safeL20">就放在那里</p>
+        <p id="safeL21">深呼吸</p>
+        <p id="safeL22">很慢地吸进去</p>
+        <p id="safeL23">很慢地呼出来</p>
+        <p id="safeL24">每一次你允许自己感受</p>
+        <p id="safeL25">你就是在保护自己的身体</p>
+        <p id="safeL26">它可以在这里</p>
+        <p id="safeL27">不用改变它</p>
+        <p id="safeL28">不用赶走它</p>
+        <p id="safeL29">不用修复它</p>
+        <p id="safeL30">它想待多久</p>
+        <p id="safeL31">就待多久</p>
+        <p id="safeL32">有时候会变</p>
+        <p id="safeL33">有时候不会</p>
+        <p id="safeL34">没关系</p>
+        <p id="safeL35">会来</p>
+        <p id="safeL36">也会走</p>
+        <p id="safeL37">也许不是今天</p>
+        <p id="safeL38">也许是明天</p>
+        <p id="safeL39">也许是下一秒</p>
+        <p id="safeL40">你只需要知道</p>
+        <p id="safeL41">它是被允许的</p>
+        <p id="safeL42">你做到了</p>
+        <p id="safeL43">你愿意停下来</p>
+        <p id="safeL44">我在这里</p>
+        <p id="safeL45">随时可以再回来</p>
+        <p id="safeL46">待在这里 💛</p>
       </div>
       <p id="safeEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">没关系，就这样 💛</p>
       <div class="safe-actions" id="safeActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;opacity:0;">
@@ -1846,21 +1829,17 @@ function startGentleSafe(){
     SoundEngine.playLayer('piano-secret', 0.15);
   }, 2000));
 
-  // 40行文案依次显示，每行4秒
-  const scrollContainer = document.querySelector('.aid-scroll');
-  for(let i = 1; i <= 40; i++) {
+  // 46行文案依次显示，每行约6.5秒（配合5分02秒音乐）
+  for(let i = 1; i <= 46; i++) {
     addTimer(setTimeout(() => {
       const el = document.getElementById('safeL' + i);
       if (el && el.textContent) {
         el.classList.add('show');
-        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
-          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-        }
       }
-    }, 800 + (i - 1) * 4000));
+    }, 1000 + (i - 1) * 6500));
   }
 
-  // 302秒（音乐结束）后文字淡出，显示鼓励语和按钮
+  // 302秒（5分02秒，音乐结束）后文字淡出，显示鼓励语和按钮
   addTimer(setTimeout(() => {
     const linesContainer = document.getElementById('safeLines');
     if (linesContainer) {
@@ -1872,10 +1851,12 @@ function startGentleSafe(){
       if (encouragement) {
         encouragement.style.opacity = '1';
       }
-      const actions = document.getElementById('safeActions');
-      if (actions) {
-        actions.style.opacity = '1';
-      }
+      addTimer(setTimeout(() => {
+        const actions = document.getElementById('safeActions');
+        if (actions) {
+          actions.style.opacity = '1';
+        }
+      }, 4000));
     }, 4000));
   }, 302000));
 }
