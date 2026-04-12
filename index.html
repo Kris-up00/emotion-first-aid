@@ -1003,16 +1003,6 @@
   <div class="hero-icon">🌙</div>
   <h1 class="hero-title">可以在这里<br>待一会儿</h1>
   <p class="hero-sub">不用急<br>你什么时候来都可以</p>
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="num">30秒</div>
-      <div class="label">重新连接自己</div>
-    </div>
-    <div class="hero-stat">
-      <div class="num">0</div>
-      <div class="label">需要做的事</div>
-    </div>
-  </div>
   <button class="btn-primary" onclick="goToPage('page-emotion')" style="position:relative;z-index:10;">
     进来 ✨
   </button>
@@ -1630,10 +1620,8 @@ function buildGentleAnxious(){
         <p id="axL6">感受那个紧的感觉</p>
         <p id="axL7">不用赶走它</p>
         <p id="axL8">不用改变它</p>
-        <p id="axL9">它会来的</p>
-        <p id="axL10">也会走</p>
-        <p id="axL11">你只需要在这里</p>
-        <p id="axL12">我在这里 💛</p>
+        <p id="axL9">会来，也会走</p>
+        <p id="axL10">你已经在保护自己了 💙</p>
       </div>
       <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经在保护自己了 💙</p>
       <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;opacity:0;">
@@ -1654,20 +1642,17 @@ function startGentleAnxious(){
     SoundEngine.playLayer('piano-dandelion', 0.15);
   }, 2000));
 
-  // 12行文案依次显示，每行6秒（配合78秒音乐）
+  // 10行文案依次显示，每行7秒（配合78秒音乐）
   const delays = [];
-  for(let i = 1; i <= 12; i++) {
-    delays.push(1000 + (i - 1) * 6000);
+  for(let i = 1; i <= 10; i++) {
+    delays.push(1000 + (i - 1) * 7000);
   }
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
-      const el = document.getElementById('axL' + (i + 1));
+      const el = document.getElementById('axL' + i);
       if (el && el.textContent) {
         el.classList.add('show');
-        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
-          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-        }
       }
     }, delay));
   });
@@ -1746,6 +1731,7 @@ function buildGentleSafe(){
         padding: 0 1rem;
         max-width: 320px;
         margin: auto;
+        position: relative;
         z-index: 2;
       }
       .safe-lines p {
