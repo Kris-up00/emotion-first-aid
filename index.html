@@ -1001,12 +1001,12 @@
 <div class="page active" id="page-home">
   <div class="home-badge">🩹 情绪急救站</div>
   <div class="hero-icon">🌙</div>
-  <h1 class="hero-title">你现在还好吗？</h1>
-  <p class="hero-sub">不用思考，不用解决<br>就在这里待30秒</p>
+  <h1 class="hero-title">可以在这里<br>待一会儿</h1>
+  <p class="hero-sub">不用急<br>你什么时候来都可以</p>
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="num">30秒</div>
-      <div class="label">重新连接自己</div>
+      <div class="num">∞</div>
+      <div class="label">想待多久都可以</div>
     </div>
     <div class="hero-stat">
       <div class="num">0</div>
@@ -1014,7 +1014,7 @@
     </div>
   </div>
   <button class="btn-primary" onclick="goToPage('page-emotion')" style="position:relative;z-index:10;">
-    我需要被接住 ✨
+    待一会儿 💛
   </button>
 </div>
 
@@ -1030,9 +1030,15 @@
         <span class="emoji">🌙</span>
         <div class="info">
           <div class="name">睡不着</div>
-          <div class="desc">脑子转个不停，身体却很累</div>
+          <div class="desc">脑子转个不停，身体很累</div>
         </div>
-        <span class="tag">常见</span>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('down')">
+        <span class="emoji">😔</span>
+        <div class="info">
+          <div class="name">不知道哪里难受</div>
+          <div class="desc">说不清，就是不舒服</div>
+        </div>
       </div>
       <div class="emotion-item" onclick="selectEmotion('anxious')">
         <span class="emoji">😰</span>
@@ -1040,37 +1046,6 @@
           <div class="name">焦虑心慌</div>
           <div class="desc">心跳很快，停不下来地担心</div>
         </div>
-        <span class="tag">常见</span>
-      </div>
-      <div class="emotion-item" onclick="selectEmotion('down')">
-        <span class="emoji">😔</span>
-        <div class="info">
-          <div class="name">心里堵</div>
-          <div class="desc">闷闷的，像有什么压着</div>
-        </div>
-      </div>
-      <div class="emotion-item" onclick="selectEmotion('lonely')">
-        <span class="emoji">💔</span>
-        <div class="info">
-          <div class="name">孤独</div>
-          <div class="desc">想被看见，却说不出口</div>
-        </div>
-      </div>
-      <div class="emotion-item" onclick="selectEmotion('peoplepleaser')">
-        <span class="emoji">🎭</span>
-        <div class="info">
-          <div class="name">总是为别人着想</div>
-          <div class="desc">优先考虑别人，却忽略了自己</div>
-        </div>
-        <span class="tag warm">新增</span>
-      </div>
-      <div class="emotion-item emergency" onclick="selectEmotion('overwhelmed')">
-        <span class="emoji">🆘</span>
-        <div class="info">
-          <div class="name">撑不住了</div>
-          <div class="desc">太多情绪涌过来，快被淹没</div>
-        </div>
-        <span class="tag warm">24h热线</span>
       </div>
     </div>
     <div class="emotion-back">
@@ -1193,33 +1168,20 @@ function showToast(msg){
 const scenarios = {
   insomnia: {
     emoji: '🌙',
-    message: '',
+    message: '脑子转个不停<br>身体很累',
     type: 'gentle-sleep'
-  },
-  anxious: {
-    emoji: '😰',
-    message: '什么都不用做<br>就这样待一会儿',
-    type: 'gentle-anxious'
   },
   down: {
     emoji: '😔',
     message: '说不清<br>就是不舒服',
     type: 'gentle-down'
   },
-  lonely: {
-    emoji: '🌙',
-    message: '远处有一盏灯<br>有人在',
-    type: 'gentle-lonely'
-  },
-  peoplepleaser: {
-    emoji: '🎭',
-    message: '你总是最后一个考虑自己<br>这让你很累吧',
-    type: 'gentle-peoplepleaser'
-  },
-  overwhelmed: {
-    emoji: '🆘',
-    message: '现在什么都不用做<br>你只需要呼吸',
-    type: 'gentle-overwhelm'
+  anxious: {
+    emoji: '😰',
+    message: '心跳很快<br>停不下来地担心',
+    type: 'gentle-anxious'
+  }
+};
   }
 };
 
