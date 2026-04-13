@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>情绪急救站 🩹</title>
-<!-- v3.0 - Gabor Mate风格重设计 - 身体扫描优先 -->
+<!-- v2.2 - Audio autoplay fix - CDN refresh -->
 <style>
   :root {
     --bg-deep: #141420;
@@ -105,76 +105,61 @@
     transform: translateY(0) scale(1);
   }
 
-  /* ===== 首屏 - Gabor Maté风格：深色温暖、被接住 ===== */
-  .home-container {
-    display: flex;
-    flex-direction: column;
+  /* ===== 首屏 ===== */
+  .home-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 2rem;
+    gap: 0.3rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    background: rgba(248,180,180,0.1);
+    border: 1px solid rgba(248,180,180,0.15);
+    font-size: 0.75rem;
+    color: var(--warm-1);
+    margin-bottom: 1.8rem;
   }
-  /* 底部暖光 - 像被篝火/烛光接住 */
-  .home-warm-light {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 500px;
-    height: 60vh;
-    background: radial-gradient(ellipse at 50% 100%, 
-      rgba(255, 180, 120, 0.35) 0%, 
-      rgba(255, 150, 100, 0.2) 25%,
-      rgba(220, 120, 80, 0.1) 50%,
-      transparent 75%);
-    filter: blur(30px);
-    animation: warmBreath 8s ease-in-out infinite;
-    pointer-events: none;
+  .hero-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.2rem;
+    animation: breathe 4s ease-in-out infinite;
   }
-  @keyframes warmBreath {
-    0%, 100% { opacity: 0.7; transform: translateX(-50%) scaleY(1); }
-    50% { opacity: 1; transform: translateX(-50%) scaleY(1.1); }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
   }
-  .home-quote {
-    font-size: 0.85rem;
-    color: rgba(248, 200, 168, 0.7);
+  .hero-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+  }
+  .hero-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
     text-align: center;
     line-height: 1.8;
     margin-bottom: 2.5rem;
-    max-width: 300px;
-    font-style: italic;
-    letter-spacing: 0.02em;
+    max-width: 280px;
   }
-  .home-icon {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
-    animation: softBreath 5s ease-in-out infinite;
-    filter: drop-shadow(0 0 30px rgba(255, 180, 120, 0.4));
+  .hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
   }
-  @keyframes softBreath {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+  .hero-stat {
+    text-align: center;
   }
-  .home-title {
-    font-size: 2.5rem;
+  .hero-stat .num {
+    font-size: 1.4rem;
     font-weight: 700;
-    text-align: center;
-    line-height: 1.3;
-    margin-bottom: 0.6rem;
-    letter-spacing: 0.03em;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.85) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--warm-1);
   }
-  .home-sub {
-    font-size: 1.05rem;
-    color: rgba(248, 200, 168, 0.85);
-    text-align: center;
-    line-height: 1.8;
-    margin-bottom: 3.5rem;
-    letter-spacing: 0.02em;
+  .hero-stat .label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
   }
 
   /* ===== 按钮 ===== */
@@ -1012,18 +997,25 @@
 <div class="stars" id="stars"></div>
 <div class="toast" id="toast"></div>
 
-<!-- ========== 首屏 - Gabor Maté风格 ========== -->
+<!-- ========== 首屏 ========== -->
 <div class="page active" id="page-home">
-  <div class="home-warm-light"></div>
-  <div class="home-container">
-    <p class="home-quote">"Where attention goes, energy flows."</p>
-    <div class="home-icon">🕯️</div>
-    <h1 class="home-title">在这里</h1>
-    <p class="home-sub">不用急<br>你什么时候来都可以</p>
-    <button class="btn-primary" onclick="goToPage('page-emotion')">
-      待一会儿 💛
-    </button>
+  <div class="home-badge">🩹 情绪急救站</div>
+  <div class="hero-icon">🌙</div>
+  <h1 class="hero-title">你现在还好吗？</h1>
+  <p class="hero-sub">不用思考，不用解决<br>就在这里待30秒</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">30秒</div>
+      <div class="label">重新连接自己</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">0</div>
+      <div class="label">需要做的事</div>
+    </div>
   </div>
+  <button class="btn-primary" onclick="goToPage('page-emotion')" style="position:relative;z-index:10;">
+    我需要被接住 ✨
+  </button>
 </div>
 
 <!-- ========== 情绪选择 ========== -->
@@ -1050,12 +1042,35 @@
         </div>
         <span class="tag">常见</span>
       </div>
-      <div class="emotion-item" onclick="selectEmotion('safe')">
-        <span class="emoji">🌿</span>
+      <div class="emotion-item" onclick="selectEmotion('down')">
+        <span class="emoji">😔</span>
         <div class="info">
-          <div class="name">我需要一个地方待着</div>
-          <div class="desc">说不清哪里不舒服，只想被接住</div>
+          <div class="name">心里堵</div>
+          <div class="desc">闷闷的，像有什么压着</div>
         </div>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('lonely')">
+        <span class="emoji">💔</span>
+        <div class="info">
+          <div class="name">孤独</div>
+          <div class="desc">想被看见，却说不出口</div>
+        </div>
+      </div>
+      <div class="emotion-item" onclick="selectEmotion('peoplepleaser')">
+        <span class="emoji">🎭</span>
+        <div class="info">
+          <div class="name">总是为别人着想</div>
+          <div class="desc">优先考虑别人，却忽略了自己</div>
+        </div>
+        <span class="tag warm">新增</span>
+      </div>
+      <div class="emotion-item emergency" onclick="selectEmotion('overwhelmed')">
+        <span class="emoji">🆘</span>
+        <div class="info">
+          <div class="name">撑不住了</div>
+          <div class="desc">太多情绪涌过来，快被淹没</div>
+        </div>
+        <span class="tag warm">24h热线</span>
       </div>
     </div>
     <div class="emotion-back">
@@ -1186,10 +1201,25 @@ const scenarios = {
     message: '什么都不用做<br>就这样待一会儿',
     type: 'gentle-anxious'
   },
-  safe: {
-    emoji: '🌿',
-    message: '不用告诉我是什么<br>我都在这里',
-    type: 'gentle-safe'
+  down: {
+    emoji: '😔',
+    message: '我看见你了<br>不用解释为什么',
+    type: 'gentle-down'
+  },
+  lonely: {
+    emoji: '🌙',
+    message: '远处有一盏灯<br>有人在',
+    type: 'gentle-lonely'
+  },
+  peoplepleaser: {
+    emoji: '🎭',
+    message: '你总是最后一个考虑自己<br>这让你很累吧',
+    type: 'gentle-peoplepleaser'
+  },
+  overwhelmed: {
+    emoji: '🆘',
+    message: '现在什么都不用做<br>你只需要呼吸',
+    type: 'gentle-overwhelm'
   }
 };
 
@@ -1207,7 +1237,7 @@ function selectEmotion(key){
   let html = '';
 
   // 纯沉浸场景自带完整布局，不需要外层emoji和message
-  const immersiveScenes = ['gentle-anxious', 'gentle-safe'];
+  const immersiveScenes = ['gentle-down', 'gentle-lonely', 'gentle-peoplepleaser', 'gentle-anxious'];
   if (!immersiveScenes.includes(s.type)) {
     html += `<div class="aid-emoji">${s.emoji}</div>`;
     html += `<p class="aid-message">${s.message}</p>`;
@@ -1215,9 +1245,10 @@ function selectEmotion(key){
 
   // 场景声音推荐（全屏场景自己处理声音，不需要提示）
   const suggestSound = soundSuggestions[key];
-  const isFullScreenScene = ['gentle-sleep', 'gentle-anxious', 'gentle-safe'].includes(s.type);
+  const isFullScreenScene = ['gentle-down', 'gentle-lonely', 'gentle-peoplepleaser', 'gentle-sleep', 'gentle-anxious'].includes(s.type);
   if (suggestSound && !isFullScreenScene) {
     // 用户已点击按钮进入场景，此时可以自动播放音频（浏览器允许用户交互后的自动播放）
+    // 强制重新部署 v2
     setTimeout(() => {
       SoundEngine.play(suggestSound);
     }, 500);
@@ -1230,8 +1261,17 @@ function selectEmotion(key){
     case 'gentle-anxious':
       html += buildGentleAnxious();
       break;
-    case 'gentle-safe':
-      html += buildGentleSafe();
+    case 'gentle-down':
+      html += buildGentleDown();
+      break;
+    case 'gentle-lonely':
+      html += buildGentleLonely();
+      break;
+    case 'gentle-peoplepleaser':
+      html += buildGentlePeoplePleaser();
+      break;
+    case 'gentle-overwhelm':
+      html += buildGentleOverwhelm();
       break;
   }
 
@@ -1244,11 +1284,13 @@ function selectEmotion(key){
   switch(s.type){
     case 'gentle-sleep': startGentleSleep(); break;
     case 'gentle-anxious': startGentleAnxious(); break;
-    case 'gentle-safe': startGentleSafe(); break;
+    case 'gentle-lonely': startGentleLonely(); break;
+    case 'gentle-down': startGentleDown(); break;
+    case 'gentle-peoplepleaser': startGentlePeoplePleaser(); break;
   }
 }
 
-// ===== 失眠：Gabor Mate 风格 - 身体优先 =====
+// ===== 失眠：篝火 + 极简安抚文案 =====
 function buildGentleSleep(){
   return `
     <style>
@@ -1273,7 +1315,7 @@ function buildGentleSleep(){
         pointer-events: none;
         z-index: -1;
       }
-      /* 篝火微光 */
+      /* 篝火微光 - 更温暖、更明显 */
       .fire-glow {
         position: fixed;
         bottom: 0;
@@ -1310,6 +1352,7 @@ function buildGentleSleep(){
           transparent 55%);
         animation: fireBreath3 4.7s ease-in-out infinite;
       }
+      /* 中心亮点 - 模拟火焰核心 */
       .fire-core {
         position: absolute;
         bottom: 5%;
@@ -1329,6 +1372,7 @@ function buildGentleSleep(){
         0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
         50% { opacity: 0.9; transform: translateX(-50%) scaleY(1.2); }
       }
+      /* 三层不规则动画，模拟真实火焰的跳动 */
       @keyframes fireBreath1 {
         0%, 100% { opacity: 0.7; transform: scaleY(1) scaleX(1); }
         25% { opacity: 1; transform: scaleY(1.15) scaleX(1.05); }
@@ -1346,19 +1390,27 @@ function buildGentleSleep(){
         45% { opacity: 0.95; transform: scaleY(1.2) scaleX(0.96); }
         70% { opacity: 0.7; transform: scaleY(1.08) scaleX(1.02); }
       }
+      /* 陪伴文案 - 更淡更轻 */
+      .companion-line {
+        font-size: 0.9rem !important;
+        color: rgba(200, 175, 150, 0.5) !important;
+        margin-top: 2.5rem !important;
+        font-weight: 300 !important;
+        letter-spacing: 0.05em !important;
+      }
       .sleep-lines {
         text-align: center;
         padding: 0 2rem 6rem;
         max-width: 320px;
       }
       .sleep-lines p {
-        font-size: 1.15rem;
+        font-size: 1.2rem;
         color: rgba(220, 200, 180, 0.9);
-        line-height: 2.5;
+        line-height: 2.4;
         opacity: 0;
         transform: translateY(8px);
         transition: opacity 2.5s ease-in, transform 2.5s ease-in;
-        margin: 0.5rem 0;
+        margin: 0.6rem 0;
         font-weight: 300;
       }
       .sleep-lines p.show {
@@ -1384,16 +1436,13 @@ function buildGentleSleep(){
         <div class="fire-core"></div>
       </div>
       <div class="sleep-lines" id="sleepLines">
-        <p id="sleepL1">睡不着</p>
-        <p id="sleepL2">脑子一直在转</p>
-        <p id="sleepL3">身体很累</p>
-        <p id="sleepL4">你不需要睡着</p>
-        <p id="sleepL5">只需要让身体休息</p>
-        <p id="sleepL6">深呼吸</p>
-        <p id="sleepL7">很慢地吸进去</p>
-        <p id="sleepL8">很慢地呼出来</p>
-        <p id="sleepL9">脑子可以继续转</p>
-        <p id="sleepL10">没关系，就在这里 💛</p>
+        <p id="sleepL1">不用急着睡着</p>
+        <p id="sleepL2">就这样躺着也好</p>
+        <p id="sleepL3">明天的事</p>
+        <p id="sleepL4">明天再说</p>
+        <p id="sleepL5">现在</p>
+        <p id="sleepL6">只需要休息</p>
+        <p id="sleepL7" class="companion-line">我在这里</p>
       </div>
       <div class="sleep-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
         <button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button>
@@ -1403,29 +1452,29 @@ function buildGentleSleep(){
 }
 
 function startGentleSleep(){
-  // 篝火声 + 雨声 - 像在雨天躲在小屋里
+  // 篝火声 - 温暖陪伴
   SoundEngine.play('fireplace');
-  SoundEngine.setVolume(0.18);
-  addTimer(setTimeout(() => {
-    SoundEngine.playLayer('rain-drops', 0.12);
-  }, 1500));
+  SoundEngine.setVolume(0.25);
 
   const lines = document.querySelectorAll('#sleepLines p');
+  const hint = document.getElementById('sleepHint');
   const fireGlow = document.querySelector('.fire-glow');
   
-  // 10行文案，每行间隔5秒
-  const delays = [];
-  for(let i = 0; i < 10; i++) {
-    delays.push(800 + i * 5000);
-  }
+  // 7行文案（6行主文案+1行陪伴文案），缓慢浮现
+  const delays = [800, 4000, 8000, 13000, 18000, 24000, 30000];
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
       const el = document.getElementById('sleepL' + (i + 1));
       if (el) el.classList.add('show');
     }, delay));
   });
+  
+  // 35秒后显示提示
+  addTimer(setTimeout(() => {
+    if (hint) hint.classList.add('show');
+  }, 35000));
 
-  // 55秒后开始屏幕微暗（10行×5秒+5秒缓冲）
+  // 60秒后开始屏幕微暗，90秒更暗，120秒几乎全黑但微光还在
   const startTime = performance.now();
   addTimer(setInterval(() => {
     if (!document.getElementById('sleepLines')) return;
@@ -1433,37 +1482,43 @@ function startGentleSleep(){
     const page = document.getElementById('page-aid');
     if (!page) return;
     
-    if (elapsed > 55 && elapsed <= 85) {
-      const darkness = (elapsed - 55) / 30 * 0.35;
+    if (elapsed > 60 && elapsed <= 90) {
+      // 60-90秒：微暗阶段
+      const darkness = (elapsed - 60) / 30 * 0.35;
       page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 85 && elapsed <= 115) {
-      const darkness = 0.35 + (elapsed - 85) / 30 * 0.4;
+    } else if (elapsed > 90 && elapsed <= 120) {
+      // 90-120秒：更暗阶段
+      const darkness = 0.35 + (elapsed - 90) / 30 * 0.4;
       page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 115) {
+    } else if (elapsed > 120) {
+      // 120秒后：几乎全黑，但微光还在
       page.style.background = 'rgba(15,15,20,0.82)';
     }
   }, 500));
 
-  // 最后一行显示后文字渐隐
+  // 90秒后文字渐隐，但陪伴文案和微光留下
   addTimer(setTimeout(() => {
     lines.forEach((line, index) => {
+      // 保留陪伴文案（最后一行）
       if (index < lines.length - 1) {
         line.style.transition = 'opacity 4s ease-out';
         line.style.opacity = '0';
       } else {
+        // 陪伴文案变淡但不消失
         line.style.transition = 'opacity 4s ease-out';
-        line.style.opacity = '0.5';
+        line.style.opacity = '0.3';
       }
     });
-  }, 800 + 9 * 5000 + 5000));
+    if (hint) { hint.style.transition = 'opacity 4s'; hint.style.opacity = '0'; }
+  }, 90000));
 
-  // 火光慢慢变柔和
+  // 120秒后微光变得更柔和（像火慢慢变小）
   addTimer(setTimeout(() => {
     if (fireGlow) {
       fireGlow.style.transition = 'opacity 8s ease-out';
       fireGlow.style.opacity = '0.5';
     }
-  }, 800 + 9 * 5000 + 10000));
+  }, 120000));
 }
 
 // ===== 焦虑：温暖的呼吸光晕（接纳而非改变） =====
@@ -1630,19 +1685,18 @@ function buildGentleAnxious(){
     <div class="anxious-scene">
       <div class="anxious-fire-glow"></div>
       <div class="anxious-lines" id="anxiousLines">
-        <p id="axL1">深呼吸</p>
-        <p id="axL2">很慢地吸进去</p>
-        <p id="axL3">很慢地呼出来</p>
-        <p id="axL4">再来一次</p>
-        <p id="axL5">把注意力放在胸口</p>
-        <p id="axL6">感受那个紧的感觉</p>
-        <p id="axL7">不用赶走它</p>
-        <p id="axL8">不用改变它</p>
-        <p id="axL9">会来，也会走</p>
-        <p id="axL10">你已经在保护自己了 💙</p>
+        <p id="axL0" class="freq-hint"></p>
+        <p id="axL1">你的大脑转得很快</p>
+        <p id="axL2">停不下来</p>
+        <p id="axL3">不用想明白为什么</p>
+        <p id="axL4">就这样</p>
+        <p id="axL5">让它来</p>
+        <p id="axL6">让它走</p>
+        <p id="axL7" style="margin-top:2rem;font-size:0.9rem;color:rgba(220,200,180,0.6);">每次你允许它来，就是在保护你的身体</p>
+        <p id="axL8" style="margin-top:3rem;font-size:0.85rem;color:rgba(200,180,160,0.45);font-weight:300;">就这样待着，音乐还在</p>
       </div>
       <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经在保护自己了 💙</p>
-      <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;opacity:0;">
+      <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;">
         <button class="btn-primary" onclick="goToPage('page-ending')" style="pointer-events:auto;position:relative;z-index:101;padding:0.7rem 1.8rem;font-size:0.9rem;">好一点了 🌤️</button>
         <div style="margin-top:0.5rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="pointer-events:auto;position:relative;z-index:101;padding:0.5rem 1.2rem;font-size:0.8rem;">换一个感觉</button></div>
       </div>
@@ -1651,218 +1705,80 @@ function buildGentleAnxious(){
 }
 
 function startGentleAnxious(){
+  // 频率检测 - 从 localStorage 读取今日焦虑次数
+  const today = new Date().toDateString();
+  const storageKey = 'anxiety_count_' + today;
+  let anxietyCount = parseInt(localStorage.getItem(storageKey) || '0');
+  anxietyCount++;
+  localStorage.setItem(storageKey, anxietyCount.toString());
+
+  // 根据频率设置提示语
+  const freqHintEl = document.getElementById('axL0');
+  if (freqHintEl) {
+    if (anxietyCount === 1) {
+      freqHintEl.textContent = '';
+      freqHintEl.style.display = 'none';
+    } else if (anxietyCount <= 3) {
+      freqHintEl.textContent = '今天有点辛苦';
+    } else {
+      freqHintEl.textContent = '这种模式持续一段时间了';
+    }
+  }
+
   // 篝火声 - 温暖陪伴底层
   SoundEngine.play('fireplace');
   SoundEngine.setVolume(0.20);
 
-  // 蒲公英的约定钢琴曲，2秒后轻柔渐入
+  // 彩虹钢琴曲，2秒后轻柔渐入
   addTimer(setTimeout(() => {
-    SoundEngine.playLayer('piano-dandelion', 0.15);
+    SoundEngine.playLayer('rainbow-piano', 0.15);
   }, 2000));
 
-  // 10行文案依次显示，每行7秒（配合78秒音乐）
-  const delays = [];
-  for(let i = 1; i <= 10; i++) {
-    delays.push(1000 + (i - 1) * 7000);
-  }
+  // 9行文案依次显示（根据频率可能只有8行），节奏放慢配合音乐
+  const delays = [800, 3500, 6500, 10000, 14000, 18000, 22000, 27000, 35000];
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
       const el = document.getElementById('axL' + i);
       if (el && el.textContent) {
         el.classList.add('show');
+        if (scrollContainer && el.offsetTop > scrollContainer.scrollTop + scrollContainer.clientHeight * 0.6) {
+          scrollContainer.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
       }
     }, delay));
   });
 
-  // 78秒（音乐结束）后文字淡出，显示鼓励语和按钮
+  // 部分文案淡暗（节奏同步延长）
+  const dimPairs = [[8000, 'axL2'], [13000, 'axL3']];
+  dimPairs.forEach(([delay, id]) => {
+    addTimer(setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('dim');
+    }, delay));
+  });
+
+  // 40秒后显示按钮区域（文案全部显示完后）
+  addTimer(setTimeout(() => {
+    const actions = document.getElementById('anxiousActions');
+    if (actions) actions.style.opacity = '1';
+  }, 40000));
+
+  // 音乐结束时（3分30秒），文字消失后显示鼓励语
   addTimer(setTimeout(() => {
     const linesContainer = document.getElementById('anxiousLines');
     if (linesContainer) {
-      linesContainer.style.transition = 'opacity 4s ease-out';
+      linesContainer.style.transition = 'opacity 6s ease-out';
       linesContainer.style.opacity = '0';
     }
+    // 文字完全消失后，显示鼓励语
     addTimer(setTimeout(() => {
       const encouragement = document.getElementById('axEncouragement');
       if (encouragement) {
         encouragement.style.opacity = '1';
       }
-      const actions = document.getElementById('anxiousActions');
-      if (actions) {
-        actions.style.opacity = '1';
-      }
-    }, 4000));
-  }, 78000));
-}
-
-// ===== 通用场景：Gabor Mate 风格 - 身体扫描（分阶段版） =====
-function buildGentleSafe(){
-  return `
-    <style>
-      .safe-scene {
-        text-align: center;
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background: #000000;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      }
-      .safe-fire-glow {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        top: 0;
-        background: 
-          radial-gradient(ellipse at 50% 100%, 
-            rgba(255, 140, 60, 0.25) 0%, 
-            rgba(255, 100, 40, 0.15) 15%,
-            rgba(200, 80, 30, 0.08) 35%,
-            transparent 60%),
-          radial-gradient(ellipse at 30% 100%, 
-            rgba(255, 160, 80, 0.2) 0%, 
-            rgba(240, 120, 50, 0.1) 20%,
-            transparent 50%),
-          radial-gradient(ellipse at 70% 100%, 
-            rgba(255, 120, 50, 0.2) 0%, 
-            rgba(220, 90, 40, 0.1) 18%,
-            transparent 48%);
-        pointer-events: none;
-        z-index: 0;
-        animation: safeFireBreath1 4.2s ease-in-out infinite;
-        transform-origin: 50% 100%;
-      }
-      @keyframes safeFireBreath1 {
-        0%, 100% { opacity: 0.7; transform: scaleY(1) scaleX(1); }
-        25% { opacity: 1; transform: scaleY(1.15) scaleX(1.05); }
-        50% { opacity: 0.85; transform: scaleY(1.08) scaleX(0.98); }
-        75% { opacity: 1; transform: scaleY(1.2) scaleX(1.03); }
-      }
-      .safe-lines {
-        text-align: center;
-        padding: 0 1rem;
-        max-width: 320px;
-        margin: auto;
-        position: relative;
-        z-index: 2;
-      }
-      .safe-lines p {
-        font-size: 1.1rem;
-        color: rgba(220, 200, 180, 0.92);
-        line-height: 2.5;
-        opacity: 0;
-        transform: translateY(6px);
-        transition: opacity 2.5s ease-in, transform 2.5s ease-in;
-        margin: 0.4rem 0;
-      }
-      .safe-lines p.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
-    <div class="safe-scene">
-      <div class="safe-fire-glow"></div>
-      <div class="safe-lines" id="safeLines">
-        <p id="safeL1">你来了</p>
-        <p id="safeL2">不用告诉我是什么</p>
-        <p id="safeL3">你来了，就够了</p>
-        <p id="safeL4">你愿意停下来</p>
-        <p id="safeL5">这本身就是一种勇气</p>
-        <p id="safeL6">你不是有问题</p>
-        <p id="safeL7">你只是被卡住了</p>
-        <p id="safeL8">你不需要修补自己</p>
-        <p id="safeL9">你只需要被看见</p>
-        <p id="safeL10">停下来就是在保护身体</p>
-        <p id="safeL11">现在</p>
-        <p id="safeL12">感受一下</p>
-        <p id="safeL13">你的身体</p>
-        <p id="safeL14">哪里最不舒服</p>
-        <p id="safeL15">也许已经很久了</p>
-        <p id="safeL16">没关系</p>
-        <p id="safeL17">不用回答我</p>
-        <p id="safeL18">你自己知道就好</p>
-        <p id="safeL19">把注意力放在那里</p>
-        <p id="safeL20">就放在那里</p>
-        <p id="safeL21">深呼吸</p>
-        <p id="safeL22">很慢地吸进去</p>
-        <p id="safeL23">很慢地呼出来</p>
-        <p id="safeL24">每一次你允许自己感受</p>
-        <p id="safeL25">你就是在保护自己的身体</p>
-        <p id="safeL26">它可以在这里</p>
-        <p id="safeL27">不用改变它</p>
-        <p id="safeL28">不用赶走它</p>
-        <p id="safeL29">不用修复它</p>
-        <p id="safeL30">它想待多久</p>
-        <p id="safeL31">就待多久</p>
-        <p id="safeL32">有时候会变</p>
-        <p id="safeL33">有时候不会</p>
-        <p id="safeL34">没关系</p>
-        <p id="safeL35">会来</p>
-        <p id="safeL36">也会走</p>
-        <p id="safeL37">也许不是今天</p>
-        <p id="safeL38">也许是明天</p>
-        <p id="safeL39">也许是下一秒</p>
-        <p id="safeL40">你只需要知道</p>
-        <p id="safeL41">它是被允许的</p>
-        <p id="safeL42">你做到了</p>
-        <p id="safeL43">你愿意停下来</p>
-        <p id="safeL44">我在这里</p>
-        <p id="safeL45">随时可以再回来</p>
-        <p id="safeL46">待在这里 💛</p>
-      </div>
-      <p id="safeEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">没关系，就这样 💛</p>
-      <div class="safe-actions" id="safeActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;opacity:0;">
-        <button class="btn-primary" onclick="goToPage('page-ending')" style="pointer-events:auto;position:relative;z-index:101;padding:0.7rem 1.8rem;font-size:0.9rem;">好一点了 🌤️</button>
-        <div style="margin-top:0.5rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="pointer-events:auto;position:relative;z-index:101;padding:0.5rem 1.2rem;font-size:0.8rem;">换一个感觉</button></div>
-      </div>
-    </div>
-  `;
-}
-
-function startGentleSafe(){
-  // 篝火声 + 不能说的秘密钢琴曲
-  SoundEngine.play('fireplace');
-  SoundEngine.setVolume(0.18);
-  addTimer(setTimeout(() => {
-    SoundEngine.playLayer('piano-secret', 0.15);
-  }, 2000));
-
-  // 46行文案依次显示，每行约6.5秒（配合5分02秒音乐）
-  for(let i = 1; i <= 46; i++) {
-    addTimer(setTimeout(() => {
-      const el = document.getElementById('safeL' + i);
-      if (el && el.textContent) {
-        el.classList.add('show');
-      }
-    }, 1000 + (i - 1) * 6500));
-  }
-
-  // 302秒（5分02秒，音乐结束）后文字淡出，显示鼓励语和按钮
-  addTimer(setTimeout(() => {
-    const linesContainer = document.getElementById('safeLines');
-    if (linesContainer) {
-      linesContainer.style.transition = 'opacity 4s ease-out';
-      linesContainer.style.opacity = '0';
-    }
-    addTimer(setTimeout(() => {
-      const encouragement = document.getElementById('safeEncouragement');
-      if (encouragement) {
-        encouragement.style.opacity = '1';
-      }
-      addTimer(setTimeout(() => {
-        const actions = document.getElementById('safeActions');
-        if (actions) {
-          actions.style.opacity = '1';
-        }
-      }, 4000));
-    }, 4000));
-  }, 302000));
+    }, 6000));
+  }, 200000)); // 3分20秒开始淡出，3分30秒音乐结束时鼓励语显现
 }
 
 // ===== 心里堵/低落：纯文字引导（情绪标注 Affect Labeling） =====
@@ -2507,18 +2423,18 @@ const SoundEngine = (() => {
 
   // 音频文件映射（相对于 HTML 文件的路径）
   const soundFiles = {
-    'rain-drops': 'rain-drops.mp3',
-    'calm-music': 'calm-music.mp3',
-    'sleep-music': 'sleep-meditation.mp3',
-    'fireplace': 'fireplace.mp3',
-    'healing-music': 'healing-music.mp3',
-    'rainbow-piano': 'rainbow-piano.mp3',
-    'deep-sleep-music': 'deep-sleep-music.mp3',
-    'soul-healing-music': 'soul-healing-music.mp3',
-    'piano-secret': 'piano-secret.mp3',
-    'piano-dandelion': 'piano-dandelion.mp3',
-    'piano-flowersea': 'piano-flowersea.mp3',
-    'piano-silence': 'piano-silence.mp3'
+    'rain-drops': 'audio/rain-drops.ogg',
+    'calm-music': 'audio/calm-music.ogg',
+    'sleep-music': 'audio/sleep-meditation.ogg',
+    'fireplace': 'audio/fireplace.ogg',
+    'healing-music': 'audio/healing-music.ogg',
+    'rainbow-piano': 'audio/rainbow-piano.ogg',
+    'deep-sleep-music': 'audio/deep-sleep-music.ogg',
+    'soul-healing-music': 'audio/soul-healing-music.ogg',
+    'piano-secret': 'audio/piano-secret.ogg',
+    'piano-dandelion': 'audio/piano-dandelion.ogg',
+    'piano-flowersea': 'audio/piano-flowersea.ogg',
+    'piano-silence': 'audio/piano-silence.ogg'
   };
 
   function play(type) {
