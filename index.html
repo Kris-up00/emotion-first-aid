@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>情绪急救站 🩹</title>
-<!-- v2.3.20260415-2150 - 繁星+篝火效果 -->
+<!-- v2.4.20260415 - 不知道哪里难受场景优化 -->
 <style>
   :root {
     --bg-deep: #141420;
@@ -1912,33 +1912,32 @@ function buildGentleDown(){
         <p id="downL2">你愿意停下来看它一眼，</p>
         <p id="downL3">这本身就是温柔。</p>
         <p id="downL4">感受一下你的身体。</p>
-        <p id="downL5">哪里最不舒服？</p>
-        <p id="downL6">胸口？胃？肩膀？喉咙？</p>
-        <p id="downL7">也许这种感觉已经陪了你很久了。</p>
-        <p id="downL8">久到你已经习惯了忽略它。</p>
-        <p id="downL9">现在，把手轻轻放在那个位置。</p>
-        <p id="downL10">就放在那里。不用用力。</p>
-        <p id="downL11">吸气——慢慢地</p>
-        <p id="downL12">呼气——更慢一点</p>
-        <p id="downL13">不用深呼吸，就按你自己舒服的节奏就好。</p>
-        <p id="downL14">再来一次。</p>
-        <p id="downL15">那个不舒服的感觉——允许它在这里。</p>
-        <p id="downL16">不需要赶走它，</p>
-        <p id="downL17">不需要修复它，</p>
-        <p id="downL18">不需要给它起名字。</p>
-        <p id="downL19">它可以待着。</p>
-        <p id="downL20">你也可以和它一起待着。</p>
-        <p id="downL21">情绪是活的。</p>
-        <p id="downL22">它会变强，也会变弱。</p>
-        <p id="downL23">会来，也会走。</p>
-        <p id="downL24">你不需要控制它。</p>
-        <p id="downL25">只需要看着它流过你，像水流过石头一样。</p>
-        <p id="downL26">你做到了。</p>
-        <p id="downL27">只是停下了几十秒，只是允许自己被不舒服陪伴了一会儿。</p>
-        <p id="downL28">这本身就是一种力量。</p>
-        <p id="downL29">随时可以再回来。</p>
-        <p id="downL30">这里一直都在。</p>
-        <p id="downL31">没关系，就这样 💛</p>
+        <p id="downL5">也许这种感觉已经陪了你很久了。</p>
+        <p id="downL6">久到你已经习惯了忽略它。</p>
+        <p id="downL7">没关系。</p>
+        <p id="downL8">现在，把手轻轻放在胸口。</p>
+        <p id="downL9">就放在那里。不用用力。</p>
+        <p id="downL10">吸气——慢慢地</p>
+        <p id="downL11">呼气——更慢一点</p>
+        <p id="downL12">不用深呼吸，就按你自己舒服的节奏。</p>
+        <p id="downL13">再来一次。</p>
+        <p id="downL14">那个不舒服的感觉——允许它在这里。</p>
+        <p id="downL15">不需要赶走它，</p>
+        <p id="downL16">不需要修复它，</p>
+        <p id="downL17">不需要给它起名字。</p>
+        <p id="downL18">它可以待着。</p>
+        <p id="downL19">你也可以和它一起待着。</p>
+        <p id="downL20">情绪是活的。</p>
+        <p id="downL21">它会变强，也会变弱。</p>
+        <p id="downL22">会来，也会走。</p>
+        <p id="downL23">你不需要控制它。</p>
+        <p id="downL24">只需要看着它流过你，像水流过石头一样。</p>
+        <p id="downL25">你做到了。</p>
+        <p id="downL26">只是停下了几十秒，只是允许自己被不舒服陪伴了一会儿。</p>
+        <p id="downL27">这本身就是一种力量。</p>
+        <p id="downL28">随时可以再回来。</p>
+        <p id="downL29">这里一直都在。</p>
+        <p id="downL30">没关系，就这样 💛</p>
       </div>
       <p id="downEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你很勇敢 💛 允许自己难受，本身就是疗愈</p>
       <div class="down-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
@@ -1959,10 +1958,8 @@ function startGentleDown(){
     SoundEngine.playLayer('piano-secret', 0.15);
   }, 2000));
 
-  // 32行文案，节奏设计：开头快建立连接→身体扫描慢→呼吸有节奏→结尾留白
-  // delays: 1s, 3s, 5s, 7s, 10s, 13s, 16s, 19s, 23s, 26s, 29s, 33s, 37s, 41s, 45s, 49s, 52s, 55s, 58s, 62s, 65s, 68s, 71s, 74s, 78s, 82s, 86s, 90s, 94s, 98s, 102s, 105s
-  // delays: 1s, 3s, 5s, 7s, 10s, 13s, 16s, 19s, 23s, 26s, 29s, 33s, 37s, 41s, 45s, 49s, 52s, 55s, 58s, 62s, 65s, 68s, 71s, 74s, 78s, 82s, 86s, 90s, 94s, 98s, 102s, 105s
-  const delays = [1000, 3000, 5000, 7000, 10000, 13000, 16000, 19000, 23000, 26000, 29000, 33000, 37000, 41000, 45000, 49000, 52000, 55000, 58000, 62000, 65000, 68000, 71000, 74000, 78000, 82000, 86000, 90000, 94000, 98000, 102000, 105000];
+  // 31行文案，节奏更慢更舒缓
+  const delays = [1200, 4000, 7000, 10000, 14000, 19000, 24000, 30000, 36000, 43000, 50000, 57000, 64000, 71000, 78000, 85000, 92000, 99000, 106000, 113000, 120000, 127000, 134000, 141000, 148000, 155000, 162000, 169000, 176000, 183000, 190000];
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
@@ -1977,12 +1974,12 @@ function startGentleDown(){
     }, delay));
   });
 
-  // 文案淡暗——开始于中间部分，让早期内容慢慢隐去
+  // 文案淡暗——从中间开始，让早期内容慢慢隐去
   const dimPairs = [
-    [25000, 'downL1'], [30000, 'downL2'], [35000, 'downL3'], [40000, 'downL4'], [45000, 'downL5'],
-    [50000, 'downL6'], [55000, 'downL7'], [60000, 'downL8'], [65000, 'downL9'], [70000, 'downL10'],
-    [75000, 'downL11'], [80000, 'downL12'], [85000, 'downL13'], [90000, 'downL14'], [95000, 'downL15'],
-    [100000, 'downL16']
+    [30000, 'downL1'], [35000, 'downL2'], [40000, 'downL3'], [45000, 'downL4'], [50000, 'downL5'],
+    [55000, 'downL6'], [60000, 'downL7'], [65000, 'downL8'], [70000, 'downL9'], [75000, 'downL10'],
+    [80000, 'downL11'], [85000, 'downL12'], [90000, 'downL13'], [95000, 'downL14'], [100000, 'downL15'],
+    [105000, 'downL16'], [110000, 'downL17'], [115000, 'downL18'], [120000, 'downL19']
   ];
   dimPairs.forEach(([delay, id]) => {
     addTimer(setTimeout(() => {
@@ -1991,21 +1988,20 @@ function startGentleDown(){
     }, delay));
   });
 
-  // 5分钟后音乐结束时，文字消失后显示鼓励语
+  // 文字结束（约190秒）时，文字和音乐同步淡出
   addTimer(setTimeout(() => {
+    // 文字淡出
     const linesContainer = document.getElementById('downLines');
     if (linesContainer) {
-      linesContainer.style.transition = 'opacity 6s ease-out';
+      linesContainer.style.transition = 'opacity 8s ease-out';
       linesContainer.style.opacity = '0';
     }
-    // 文字完全消失后，显示鼓励语
+    // 音乐同步淡出
+    SoundEngine.setVolume(0.05);
     addTimer(setTimeout(() => {
-      const encouragement = document.getElementById('downEncouragement');
-      if (encouragement) {
-        encouragement.style.opacity = '1';
-      }
-    }, 6000));
-  }, 300000));
+      SoundEngine.forceStop();
+    }, 8000));
+  }, 190000));
 }
 
 // ===== 孤独：星空下的陪伴 =====
