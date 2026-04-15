@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>情绪急救站 🩹</title>
-<!-- v2.2 - Audio autoplay fix - CDN refresh -->
+<!-- v2.3.20260415-2150 - 繁星+篝火效果 -->
 <style>
   :root {
     --bg-deep: #141420;
@@ -1103,6 +1103,7 @@
 
 <script>
 // ===== 星星 =====
+// v2.3 - 繁星+篝火效果
 (function(){
   const c=document.getElementById('stars');
   for(let i=0;i<40;i++){
@@ -1251,7 +1252,57 @@ function selectEmotion(key){
   }
 }
 
-// ===== 失眠：篝火 + 极简安抚文案 =====
+// ===== 失眠：星空 + 篝火沉浸体验 =====
+// 核心：满天繁星 + 底部温暖篝火，像躺在草地上仰望夜空
+function generateSleepStars(){
+  const container = document.getElementById('sleepStarsContainer');
+  if (!container) return;
+
+  // 生成60颗星星，分布在屏幕上半部分
+  const starCount = 60;
+  for(let i = 0; i < starCount; i++){
+    const star = document.createElement('div');
+    star.className = 'sleep-star';
+    const size = Math.random() * 2.5 + 1; // 1-3.5px
+    const top = Math.random() * 70; // 只分布在上半部分（0-70%）
+    const left = Math.random() * 100;
+    const delay = Math.random() * 5;
+    const duration = 2 + Math.random() * 4; // 2-6秒闪烁周期
+    
+    star.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      top: ${top}%;
+      left: ${left}%;
+      animation: sleepStarTwinkle ${duration}s ease-in-out infinite;
+      animation-delay: ${delay}s;
+    `;
+    container.appendChild(star);
+  }
+
+  // 添加2-3颗流星（随机时机）
+  for(let i = 0; i < 3; i++){
+    const meteor = document.createElement('div');
+    meteor.className = 'sleep-star';
+    const size = Math.random() * 2 + 1;
+    const top = Math.random() * 30;
+    const left = 70 + Math.random() * 30;
+    const delay = 30 + Math.random() * 60; // 30-90秒后开始
+    
+    meteor.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      top: ${top}%;
+      left: ${left}%;
+      opacity: 0;
+      animation: meteor 1s ease-out forwards;
+      animation-delay: ${delay}s;
+    `;
+    meteor.style.setProperty('transform', 'translateX(0) translateY(0)');
+    container.appendChild(meteor);
+  }
+}
+
 function buildGentleSleep(){
   return `
     <style>
@@ -1265,24 +1316,49 @@ function buildGentleSleep(){
         justify-content: center;
         position: relative;
       }
-      /* 深夜背景 - 温暖暗调 */
+      /* 深夜背景 - 深邃星空感 */
       .sleep-content::before {
         content: '';
         position: fixed;
         inset: 0;
         background: 
-          radial-gradient(ellipse at 50% 60%, rgba(180, 140, 100, 0.08) 0%, transparent 50%),
-          linear-gradient(180deg, #1a1512 0%, #231c15 100%);
+          linear-gradient(180deg, #0a0a14 0%, #12121f 40%, #1a1510 100%);
+        pointer-events: none;
+        z-index: -2;
+      }
+      /* 星星容器 - 满天繁星 */
+      .sleep-stars-container {
+        position: fixed;
+        inset: 0;
         pointer-events: none;
         z-index: -1;
+        overflow: hidden;
       }
-      /* 篝火微光 - 更温暖、更明显 */
+      /* 星星 - 闪烁的星光 */
+      .sleep-star {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.6), 0 0 8px rgba(200, 220, 255, 0.3);
+      }
+      @keyframes sleepStarTwinkle {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 15px rgba(200, 220, 255, 0.5); }
+      }
+      /* 流星划过效果（随机） */
+      @keyframes meteor {
+        0% { transform: translateX(0) translateY(0); opacity: 0; }
+        10% { opacity: 1; }
+        30% { transform: translateX(-150px) translateY(80px); opacity: 0; }
+        100% { opacity: 0; }
+      }
+      /* 篝火微光 - 温暖的地平线 */
       .fire-glow {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 50vh;
+        height: 45vh;
         background: radial-gradient(ellipse at 50% 100%, 
           rgba(255, 160, 80, 0.35) 0%, 
           rgba(240, 130, 60, 0.22) 20%,
@@ -1313,14 +1389,14 @@ function buildGentleSleep(){
           transparent 55%);
         animation: fireBreath3 4.7s ease-in-out infinite;
       }
-      /* 中心亮点 - 模拟火焰核心 */
+      /* 篝火火焰核心 */
       .fire-core {
         position: absolute;
-        bottom: 5%;
+        bottom: 3%;
         left: 50%;
         transform: translateX(-50%);
-        width: 120px;
-        height: 60px;
+        width: 100px;
+        height: 50px;
         background: radial-gradient(ellipse at 50% 100%,
           rgba(255, 200, 140, 0.5) 0%,
           rgba(255, 170, 100, 0.3) 30%,
@@ -1333,7 +1409,7 @@ function buildGentleSleep(){
         0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleY(1); }
         50% { opacity: 0.9; transform: translateX(-50%) scaleY(1.2); }
       }
-      /* 三层不规则动画，模拟真实火焰的跳动 */
+      /* 篝火动画 */
       @keyframes fireBreath1 {
         0%, 100% { opacity: 0.7; transform: scaleY(1) scaleX(1); }
         25% { opacity: 1; transform: scaleY(1.15) scaleX(1.05); }
@@ -1351,7 +1427,7 @@ function buildGentleSleep(){
         45% { opacity: 0.95; transform: scaleY(1.2) scaleX(0.96); }
         70% { opacity: 0.7; transform: scaleY(1.08) scaleX(1.02); }
       }
-      /* 陪伴文案 - 更淡更轻 */
+      /* 陪伴文案 */
       .companion-line {
         font-size: 0.9rem !important;
         color: rgba(200, 175, 150, 0.5) !important;
@@ -1363,6 +1439,8 @@ function buildGentleSleep(){
         text-align: center;
         padding: 0 2rem 6rem;
         max-width: 320px;
+        position: relative;
+        z-index: 2;
       }
       .sleep-lines p {
         font-size: 1.2rem;
@@ -1393,21 +1471,32 @@ function buildGentleSleep(){
       }
     </style>
     <div class="sleep-content">
+      <div class="sleep-stars-container" id="sleepStarsContainer"></div>
       <div class="fire-glow">
         <div class="fire-core"></div>
       </div>
       <div class="sleep-lines" id="sleepLines">
-        <p id="sleepL1">睡不着也没关系</p>
-        <p id="sleepL2">脑子还在转</p>
-        <p id="sleepL3">身体已经累了</p>
-        <p id="sleepL4">不用强迫自己</p>
-        <p id="sleepL5">深呼吸</p>
-        <p id="sleepL6">很慢地吸进去</p>
-        <p id="sleepL7">很慢地呼出来</p>
-        <p id="sleepL8">脑子可以继续转</p>
-        <p id="sleepL9">没关系</p>
-        <p id="sleepL10">就在这里 💛</p>
+        <p id="sleepL1">你已经很久没好好睡了</p>
+        <p id="sleepL2">身体已经告诉你了</p>
+        <p id="sleepL3">它需要休息</p>
+        <p id="sleepL4">脑子还在转</p>
+        <p id="sleepL5">这不是你的错</p>
+        <p id="sleepL6">它只是习惯性地想保护你</p>
+        <p id="sleepL7">不用强迫自己入睡</p>
+        <p id="sleepL8">不需要</p>
+        <p id="sleepL9">就躺在篝火旁</p>
+        <p id="sleepL10">看星星，听火的声音 💛</p>
+        <p id="sleepL11">让它们陪着你</p>
+        <p id="sleepL12">你不需要做任何事</p>
+        <p id="sleepL13">不需要睡着</p>
+        <p id="sleepL14">只需要在这里</p>
+        <p id="sleepL15">存在着</p>
+        <p id="sleepL16">星星在</p>
+        <p id="sleepL17">篝火在</p>
+        <p id="sleepL18">你也在</p>
+        <p id="sleepL19">就这样</p>
       </div>
+      <p id="sleepEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经很努力了 💛 休息是被允许的</p>
       <div class="sleep-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
         <button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button>
       </div>
@@ -1416,16 +1505,23 @@ function buildGentleSleep(){
 }
 
 function startGentleSleep(){
-  // 篝火声 - 温暖陪伴
+  // 生成满天繁星
+  generateSleepStars();
+
+  // 篝火声 - 温暖陪伴（主音轨）
   SoundEngine.play('fireplace');
-  SoundEngine.setVolume(0.25);
+  SoundEngine.setVolume(0.20);
+
+  // 雨声层 - 白噪音+雨声（背景层）
+  addTimer(setTimeout(() => {
+    SoundEngine.playLayer('rain-drops', 0.12);
+  }, 2000));
 
   const lines = document.querySelectorAll('#sleepLines p');
-  const hint = document.getElementById('sleepHint');
   const fireGlow = document.querySelector('.fire-glow');
   
-  // 10行文案，缓慢浮现
-  const delays = [800, 3500, 7000, 10500, 14000, 17500, 21000, 25000, 29000, 33000];
+  // 19行文案，缓慢浮现（配合5分钟音乐）
+  const delays = [800, 4000, 8000, 13000, 18000, 23000, 29000, 35000, 42000, 49000, 56000, 64000, 72000, 80000, 88000, 96000, 105000, 114000, 124000];
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
       const el = document.getElementById('sleepL' + (i + 1));
@@ -1433,12 +1529,7 @@ function startGentleSleep(){
     }, delay));
   });
   
-  // 35秒后显示提示
-  addTimer(setTimeout(() => {
-    if (hint) hint.classList.add('show');
-  }, 35000));
-
-  // 60秒后开始屏幕微暗，90秒更暗，120秒几乎全黑但微光还在
+  // 90秒后开始屏幕微暗，营造睡眠氛围
   const startTime = performance.now();
   addTimer(setInterval(() => {
     if (!document.getElementById('sleepLines')) return;
@@ -1446,43 +1537,49 @@ function startGentleSleep(){
     const page = document.getElementById('page-aid');
     if (!page) return;
     
-    if (elapsed > 60 && elapsed <= 90) {
-      // 60-90秒：微暗阶段
-      const darkness = (elapsed - 60) / 30 * 0.35;
+    if (elapsed > 90 && elapsed <= 180) {
+      // 90-180秒：逐渐变暗
+      const darkness = (elapsed - 90) / 90 * 0.5;
       page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 90 && elapsed <= 120) {
-      // 90-120秒：更暗阶段
-      const darkness = 0.35 + (elapsed - 90) / 30 * 0.4;
-      page.style.background = 'rgba(15,15,20,' + darkness + ')';
-    } else if (elapsed > 120) {
-      // 120秒后：几乎全黑，但微光还在
-      page.style.background = 'rgba(15,15,20,0.82)';
+    } else if (elapsed > 180) {
+      // 180秒后：几乎全黑，但微光还在
+      page.style.background = 'rgba(15,15,20,0.7)';
     }
   }, 500));
 
-  // 90秒后文字渐隐，但陪伴文案和微光留下
+  // 4分钟后文字渐隐，只留最后几行
   addTimer(setTimeout(() => {
     lines.forEach((line, index) => {
-      // 保留陪伴文案（最后一行）
-      if (index < lines.length - 1) {
-        line.style.transition = 'opacity 4s ease-out';
+      // 保留最后4行（篝火在/我在/你也在/就这样）
+      if (index < lines.length - 4) {
+        line.style.transition = 'opacity 8s ease-out';
         line.style.opacity = '0';
-      } else {
-        // 陪伴文案变淡但不消失
-        line.style.transition = 'opacity 4s ease-out';
-        line.style.opacity = '0.3';
       }
     });
-    if (hint) { hint.style.transition = 'opacity 4s'; hint.style.opacity = '0'; }
-  }, 90000));
+  }, 240000));
 
-  // 120秒后微光变得更柔和（像火慢慢变小）
+  // 5分02秒音乐结束时，文字消失，显示鼓励语
+  addTimer(setTimeout(() => {
+    lines.forEach((line, index) => {
+      line.style.transition = 'opacity 6s ease-out';
+      line.style.opacity = '0';
+    });
+    // 文字完全消失后，显示鼓励语
+    addTimer(setTimeout(() => {
+      const encouragement = document.getElementById('sleepEncouragement');
+      if (encouragement) {
+        encouragement.style.opacity = '1';
+      }
+    }, 6000));
+  }, 302000));
+
+  // 篝火慢慢变柔和
   addTimer(setTimeout(() => {
     if (fireGlow) {
-      fireGlow.style.transition = 'opacity 8s ease-out';
-      fireGlow.style.opacity = '0.5';
+      fireGlow.style.transition = 'opacity 10s ease-out';
+      fireGlow.style.opacity = '0.6';
     }
-  }, 120000));
+  }, 180000));
 }
 
 // ===== 焦虑：温暖的呼吸光晕（接纳而非改变） =====
@@ -1650,16 +1747,26 @@ function buildGentleAnxious(){
       <div class="anxious-fire-glow"></div>
       <div class="anxious-lines" id="anxiousLines">
         <p id="axL0" class="freq-hint"></p>
-        <p id="axL1">你的大脑转得很快</p>
-        <p id="axL2">停不下来</p>
-        <p id="axL3">不用想明白为什么</p>
-        <p id="axL4">就这样</p>
-        <p id="axL5">让它来</p>
-        <p id="axL6">让它走</p>
-        <p id="axL7" style="margin-top:2rem;font-size:0.9rem;color:rgba(220,200,180,0.6);">每次你允许它来，就是在保护你的身体</p>
-        <p id="axL8" style="margin-top:3rem;font-size:0.85rem;color:rgba(200,180,160,0.45);font-weight:300;">就这样待着，音乐还在</p>
+        <p id="axL1">脑子一直在转</p>
+        <p id="axL2">越想停下来越停不下来</p>
+        <p id="axL3">这让你更焦虑了</p>
+        <p id="axL4">其实</p>
+        <p id="axL5">不是问题本身让你焦虑</p>
+        <p id="axL6">而是你太用力想停下来</p>
+        <p id="axL7">深呼吸</p>
+        <p id="axL8" style="margin-top:1.5rem;">焦虑不是你的敌人</p>
+        <p id="axL9">它是你的身体在保护你</p>
+        <p id="axL10" style="margin-top:1.5rem;">焦虑告诉你：</p>
+        <p id="axL11">你很重要</p>
+        <p id="axL12">你有很多在乎的东西</p>
+        <p id="axL13">这是你的力量 💙</p>
+        <p id="axL14" style="margin-top:1.5rem;">不是在说"你不够好"</p>
+        <p id="axL15">而是在说"你有感受"</p>
+        <p id="axL16" style="margin-top:1.5rem;">蒲公英的约定陪着你</p>
+        <p id="axL17">你也在陪着自己</p>
+        <p id="axL18">就这样</p>
       </div>
-      <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你已经在保护自己了 💙</p>
+      <p id="axEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.3rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;line-height:2;">你已经在保护自己了 💙<br><span style="font-size:0.9rem;opacity:0.7;">焦虑是你的力量，不是软弱</span></p>
       <div class="anxious-actions" id="anxiousActions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:1.5rem 1rem 2.5rem;z-index:100;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);pointer-events:auto;">
         <button class="btn-primary" onclick="goToPage('page-ending')" style="pointer-events:auto;position:relative;z-index:101;padding:0.7rem 1.8rem;font-size:0.9rem;">好一点了 🌤️</button>
         <div style="margin-top:0.5rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="pointer-events:auto;position:relative;z-index:101;padding:0.5rem 1.2rem;font-size:0.8rem;">换一个感觉</button></div>
@@ -1693,13 +1800,13 @@ function startGentleAnxious(){
   SoundEngine.play('fireplace');
   SoundEngine.setVolume(0.20);
 
-  // 彩虹钢琴曲，2秒后轻柔渐入
+  // 蒲公英的约定钢琴曲，2秒后轻柔渐入
   addTimer(setTimeout(() => {
-    SoundEngine.playLayer('rainbow-piano', 0.15);
+    SoundEngine.playLayer('piano-dandelion', 0.15);
   }, 2000));
 
-  // 9行文案依次显示（根据频率可能只有8行），节奏放慢配合音乐
-  const delays = [800, 3500, 6500, 10000, 14000, 18000, 22000, 27000, 35000];
+  // 18行文案依次显示，节奏放慢配合1分18秒音乐
+  const delays = [800, 3000, 5500, 8000, 11000, 15000, 19000, 24000, 30000, 36000, 42000, 48000, 54000, 60000, 66000, 72000];
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
@@ -1714,7 +1821,7 @@ function startGentleAnxious(){
   });
 
   // 部分文案淡暗（节奏同步延长）
-  const dimPairs = [[8000, 'axL2'], [13000, 'axL3']];
+  const dimPairs = [[20000, 'axL3'], [35000, 'axL6'], [55000, 'axL9'], [75000, 'axL14']];
   dimPairs.forEach(([delay, id]) => {
     addTimer(setTimeout(() => {
       const el = document.getElementById(id);
@@ -1722,13 +1829,13 @@ function startGentleAnxious(){
     }, delay));
   });
 
-  // 40秒后显示按钮区域（文案全部显示完后）
+  // 50秒后显示按钮区域（文案全部显示完后）
   addTimer(setTimeout(() => {
     const actions = document.getElementById('anxiousActions');
     if (actions) actions.style.opacity = '1';
-  }, 40000));
+  }, 50000));
 
-  // 音乐结束时（3分30秒），文字消失后显示鼓励语
+  // 1分18秒音乐结束时，文字消失后显示鼓励语
   addTimer(setTimeout(() => {
     const linesContainer = document.getElementById('anxiousLines');
     if (linesContainer) {
@@ -1742,7 +1849,7 @@ function startGentleAnxious(){
         encouragement.style.opacity = '1';
       }
     }, 6000));
-  }, 200000)); // 3分20秒开始淡出，3分30秒音乐结束时鼓励语显现
+  }, 78000)); // 3分20秒开始淡出，3分30秒音乐结束时鼓励语显现
 }
 
 // ===== 心里堵/低落：纯文字引导（情绪标注 Affect Labeling） =====
@@ -1833,6 +1940,7 @@ function buildGentleDown(){
         <p id="downL30">这里一直都在。</p>
         <p id="downL31">没关系，就这样 💛</p>
       </div>
+      <p id="downEncouragement" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(220,190,160,0.95);opacity:0;transition:opacity 4s ease;text-align:center;z-index:1000;pointer-events:none;">你很勇敢 💛 允许自己难受，本身就是疗愈</p>
       <div class="down-actions" style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:0 1rem 0.5rem;z-index:100;">
         <button class="btn-primary" onclick="goToPage('page-ending')" style="padding:0.55rem 1.4rem;font-size:0.8rem;">好一点了 🌤️</button>
         <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
@@ -1842,18 +1950,17 @@ function buildGentleDown(){
 }
 
 function startGentleDown(){
-  // 极淡白噪音
-  SoundEngine.play('rain-drops');
-  SoundEngine.setVolume(0.12);
+  // 篝火声 - 温暖陪伴
+  SoundEngine.play('fireplace');
+  SoundEngine.setVolume(0.20);
 
-  // 背景音乐层，2秒后渐入
-  const musicOptions = ['calm-music', 'healing-music', 'soul-healing-music'];
-  const chosenMusic = musicOptions[Math.floor(Math.random() * musicOptions.length)];
+  // 不能说的秘密钢琴曲，2秒后渐入
   addTimer(setTimeout(() => {
-    SoundEngine.playLayer(chosenMusic, 0.15);
+    SoundEngine.playLayer('piano-secret', 0.15);
   }, 2000));
 
   // 32行文案，节奏设计：开头快建立连接→身体扫描慢→呼吸有节奏→结尾留白
+  // delays: 1s, 3s, 5s, 7s, 10s, 13s, 16s, 19s, 23s, 26s, 29s, 33s, 37s, 41s, 45s, 49s, 52s, 55s, 58s, 62s, 65s, 68s, 71s, 74s, 78s, 82s, 86s, 90s, 94s, 98s, 102s, 105s
   // delays: 1s, 3s, 5s, 7s, 10s, 13s, 16s, 19s, 23s, 26s, 29s, 33s, 37s, 41s, 45s, 49s, 52s, 55s, 58s, 62s, 65s, 68s, 71s, 74s, 78s, 82s, 86s, 90s, 94s, 98s, 102s, 105s
   const delays = [1000, 3000, 5000, 7000, 10000, 13000, 16000, 19000, 23000, 26000, 29000, 33000, 37000, 41000, 45000, 49000, 52000, 55000, 58000, 62000, 65000, 68000, 71000, 74000, 78000, 82000, 86000, 90000, 94000, 98000, 102000, 105000];
   const scrollContainer = document.querySelector('.aid-scroll');
@@ -1883,6 +1990,22 @@ function startGentleDown(){
       if (el) el.classList.add('dim');
     }, delay));
   });
+
+  // 5分钟后音乐结束时，文字消失后显示鼓励语
+  addTimer(setTimeout(() => {
+    const linesContainer = document.getElementById('downLines');
+    if (linesContainer) {
+      linesContainer.style.transition = 'opacity 6s ease-out';
+      linesContainer.style.opacity = '0';
+    }
+    // 文字完全消失后，显示鼓励语
+    addTimer(setTimeout(() => {
+      const encouragement = document.getElementById('downEncouragement');
+      if (encouragement) {
+        encouragement.style.opacity = '1';
+      }
+    }, 6000));
+  }, 300000));
 }
 
 // ===== 孤独：星空下的陪伴 =====
