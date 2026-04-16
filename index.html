@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>情绪急救站 🩹</title>
-<!-- v2.4.20260415 - 不知道哪里难受场景优化 -->
+<!-- v2.6.20260416 - 不知道哪里难受场景音乐文字同步 -->
 <style>
   :root {
     --bg-deep: #141420;
@@ -1856,25 +1856,82 @@ function startGentleAnxious(){
 function buildGentleDown(){
   return `
     <style>
-      /* 心里堵场景 - 纯文字，极简，暖色调 */
+      /* 心里堵场景 - 繁星+大篝火效果 */
       .down-scene {
         text-align: center;
         padding: 1rem 0;
         width: 100%;
+        height: 100vh;
         position: relative;
+        overflow: hidden;
       }
-      /* 极淡暖色背景渐变 */
-      .down-scene::before {
-        content: '';
+      /* 全屏篝火光晕 - 比焦虑场景更大更温暖 */
+      .down-fire-glow {
         position: fixed;
-        inset: 0;
-        background: radial-gradient(ellipse at 50% 30%, rgba(220, 180, 140, 0.08) 0%, transparent 60%);
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 55%;
+        background: radial-gradient(ellipse 80% 50% at 50% 100%, 
+          rgba(255, 140, 60, 0.35) 0%, 
+          rgba(255, 100, 40, 0.25) 20%, 
+          rgba(220, 80, 30, 0.15) 40%,
+          rgba(180, 60, 20, 0.08) 60%,
+          transparent 80%);
         pointer-events: none;
-        z-index: -1;
+        z-index: 1;
+        animation: downFireBreath 3s ease-in-out infinite;
       }
+      @keyframes downFireBreath {
+        0%, 100% { opacity: 1; transform: scaleY(1); }
+        50% { opacity: 0.85; transform: scaleY(1.05); }
+      }
+      /* 篝火火焰核心 */
+      .down-fire-core {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 180px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .down-fire-flame {
+        position: absolute;
+        bottom: 0;
+        border-radius: 50% 50% 20% 20%;
+        background: linear-gradient(to top, rgba(255,200,100,0.9), rgba(255,150,50,0.7), rgba(255,100,30,0.4), transparent);
+        animation: downFlame 2s ease-in-out infinite;
+      }
+      .down-fire-flame:nth-child(1) { left: 30%; width: 60px; height: 140px; animation-delay: 0s; }
+      .down-fire-flame:nth-child(2) { left: 50%; transform: translateX(-50%); width: 80px; height: 180px; animation-delay: 0.3s; }
+      .down-fire-flame:nth-child(3) { right: 30%; width: 55px; height: 130px; animation-delay: 0.6s; }
+      .down-fire-flame:nth-child(4) { left: 20%; width: 40px; height: 100px; animation-delay: 0.9s; }
+      .down-fire-flame:nth-child(5) { right: 20%; width: 45px; height: 110px; animation-delay: 1.2s; }
+      @keyframes downFlame {
+        0%, 100% { opacity: 0.7; transform: translateX(-50%) scaleY(1); }
+        50% { opacity: 1; transform: translateX(-50%) scaleY(1.2); }
+      }
+      /* 星星 */
+      .down-star {
+        position: fixed;
+        background: rgba(255, 250, 240, 0.9);
+        border-radius: 50%;
+        animation: twinkle 3s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+      /* 文字区域 */
       .down-lines {
+        position: relative;
+        z-index: 10;
         text-align: center;
-        padding: 0 1rem 6rem;
+        padding: 0 1rem 8rem;
         max-width: 320px;
         margin: 0 auto;
       }
@@ -1898,14 +1955,26 @@ function buildGentleDown(){
         opacity: 0.2;
         transition: opacity 3.5s ease-out;
       }
-      /* 心里堵场景按钮区域 */
+      /* 按钮区域 */
       .down-actions {
-        margin-top: 2rem;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
         text-align: center;
+        padding: 0 1rem 0.5rem;
+        z-index: 100;
       }
-
     </style>
     <div class="down-scene">
+      <div class="down-fire-glow"></div>
+      <div class="down-fire-core">
+        <div class="down-fire-flame"></div>
+        <div class="down-fire-flame"></div>
+        <div class="down-fire-flame"></div>
+        <div class="down-fire-flame"></div>
+        <div class="down-fire-flame"></div>
+      </div>
       <div class="down-lines" id="downLines">
         <p id="downL0">你在这里。</p>
         <p id="downL1">不管是什么不舒服，</p>
@@ -1945,6 +2014,19 @@ function buildGentleDown(){
         <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
       </div>
     </div>
+    <script>
+      // 生成星星
+      (function(){
+        const scene = document.querySelector('.down-scene');
+        if(!scene) return;
+        for(let i=0;i<30;i++){
+          const star=document.createElement('div');
+          star.className='down-star';
+          star.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*70+'%;width:'+(Math.random()*2+1)+'px;height:'+(Math.random()*2+1)+'px;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*2)+'s';
+          scene.appendChild(star);
+        }
+      })();
+    </script>
   `;
 }
 
@@ -1958,8 +2040,9 @@ function startGentleDown(){
     SoundEngine.playLayer('piano-secret', 0.15);
   }, 2000));
 
-  // 31行文案，节奏更慢更舒缓
-  const delays = [1200, 4000, 7000, 10000, 14000, 19000, 24000, 30000, 36000, 43000, 50000, 57000, 64000, 71000, 78000, 85000, 92000, 99000, 106000, 113000, 120000, 127000, 134000, 141000, 148000, 155000, 162000, 169000, 176000, 183000, 190000];
+  // 31行文案，配合5分02秒（302000ms）音乐
+  // 文字节奏：开头稍快建立连接 → 中间身体扫描 → 呼吸练习 → 结尾留白
+  const delays = [1000, 3000, 5500, 8500, 12000, 16000, 21000, 27000, 34000, 42000, 50000, 58000, 66000, 74000, 82000, 90000, 98000, 106000, 114000, 122000, 130000, 138000, 146000, 154000, 162000, 170000, 178000, 186000, 194000, 202000, 210000];
   const scrollContainer = document.querySelector('.aid-scroll');
   delays.forEach((delay, i) => {
     addTimer(setTimeout(() => {
@@ -1974,12 +2057,12 @@ function startGentleDown(){
     }, delay));
   });
 
-  // 文案淡暗——从中间开始，让早期内容慢慢隐去
+  // 文案淡暗——从早期内容开始，让内容依次隐去
   const dimPairs = [
-    [30000, 'downL1'], [35000, 'downL2'], [40000, 'downL3'], [45000, 'downL4'], [50000, 'downL5'],
-    [55000, 'downL6'], [60000, 'downL7'], [65000, 'downL8'], [70000, 'downL9'], [75000, 'downL10'],
-    [80000, 'downL11'], [85000, 'downL12'], [90000, 'downL13'], [95000, 'downL14'], [100000, 'downL15'],
-    [105000, 'downL16'], [110000, 'downL17'], [115000, 'downL18'], [120000, 'downL19']
+    [50000, 'downL1'], [60000, 'downL2'], [70000, 'downL3'], [80000, 'downL4'], [90000, 'downL5'],
+    [100000, 'downL6'], [110000, 'downL7'], [120000, 'downL8'], [130000, 'downL9'], [140000, 'downL10'],
+    [150000, 'downL11'], [160000, 'downL12'], [170000, 'downL13'], [180000, 'downL14'], [190000, 'downL15'],
+    [200000, 'downL16'], [210000, 'downL17'], [220000, 'downL18'], [230000, 'downL19']
   ];
   dimPairs.forEach(([delay, id]) => {
     addTimer(setTimeout(() => {
@@ -1988,20 +2071,31 @@ function startGentleDown(){
     }, delay));
   });
 
-  // 文字结束（约190秒）时，文字和音乐同步淡出
+  // 5分02秒（302000ms）音乐结束时，文字同步淡出，然后显示鼓励语
+  const musicDuration = 302000;
+  const fadeOutDuration = 10000; // 10秒淡出
+
   addTimer(setTimeout(() => {
     // 文字淡出
     const linesContainer = document.getElementById('downLines');
     if (linesContainer) {
-      linesContainer.style.transition = 'opacity 8s ease-out';
+      linesContainer.style.transition = 'opacity 10s ease-out';
       linesContainer.style.opacity = '0';
     }
     // 音乐同步淡出
-    SoundEngine.setVolume(0.05);
+    SoundEngine.setVolume(0.02);
     addTimer(setTimeout(() => {
       SoundEngine.forceStop();
-    }, 8000));
-  }, 190000));
+    }, fadeOutDuration));
+  }, musicDuration));
+
+  // 文字消失后（约312秒），显示鼓励语
+  addTimer(setTimeout(() => {
+    const encouragement = document.getElementById('downEncouragement');
+    if (encouragement) {
+      encouragement.style.opacity = '1';
+    }
+  }, musicDuration + fadeOutDuration + 2000));
 }
 
 // ===== 孤独：星空下的陪伴 =====
