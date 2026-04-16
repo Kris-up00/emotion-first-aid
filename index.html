@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>情绪急救站 🩹</title>
-<!-- v2.6.20260416 - 不知道哪里难受场景音乐文字同步 -->
+<!-- v2.6.1.20260416 - 修复down场景script标签注入问题 -->
 <style>
   :root {
     --bg-deep: #141420;
@@ -2014,23 +2014,21 @@ function buildGentleDown(){
         <div style="margin-top:0.3rem;"><button class="btn-ghost" onclick="goToPage('page-emotion')" style="padding:0.35rem 0.9rem;font-size:0.7rem;">换一个感觉</button></div>
       </div>
     </div>
-    <script>
-      // 生成星星
-      (function(){
-        const scene = document.querySelector('.down-scene');
-        if(!scene) return;
-        for(let i=0;i<30;i++){
-          const star=document.createElement('div');
-          star.className='down-star';
-          star.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*70+'%;width:'+(Math.random()*2+1)+'px;height:'+(Math.random()*2+1)+'px;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*2)+'s';
-          scene.appendChild(star);
-        }
-      })();
-    </script>
   `;
 }
 
 function startGentleDown(){
+  // 生成星星
+  const scene = document.querySelector('.down-scene');
+  if (scene) {
+    for (let i = 0; i < 30; i++) {
+      const star = document.createElement('div');
+      star.className = 'down-star';
+      star.style.cssText = 'left:' + Math.random()*100 + '%;top:' + Math.random()*70 + '%;width:' + (Math.random()*2+1) + 'px;height:' + (Math.random()*2+1) + 'px;animation-delay:' + Math.random()*3 + 's;animation-duration:' + (2+Math.random()*2) + 's';
+      scene.appendChild(star);
+    }
+  }
+
   // 篝火声 - 温暖陪伴
   SoundEngine.play('fireplace');
   SoundEngine.setVolume(0.20);
